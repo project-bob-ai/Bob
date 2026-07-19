@@ -1,0 +1,248 @@
+/* ============================================================
+   Bob IBM i Blogs — Shared Stylesheet
+   IBM Carbon Design System, Light Theme
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── IBM Design Language tokens ──────────────────────────── */
+:root {
+  --ibm-blue-60:    #0f62fe;
+  --ibm-blue-70:    #0043ce;
+  --ibm-blue-10:    #edf5ff;
+  --ibm-gray-100:   #161616;
+  --ibm-gray-70:    #525252;
+  --ibm-gray-30:    #c6c6c6;
+  --ibm-gray-20:    #e0e0e0;
+  --ibm-gray-10:    #f4f4f4;
+  --ibm-white:      #ffffff;
+  --ibm-green-60:   #198038;
+  --ibm-green-10:   #defbe6;
+  --ibm-red-60:     #da1e28;
+  --ibm-red-10:     #fff1f1;
+  --ibm-yellow-30:  #f1c21b;
+  --ibm-yellow-10:  #fdf6dd;
+
+  --blue:        var(--ibm-blue-60);
+  --blue-dark:   var(--ibm-blue-70);
+  --green:       var(--ibm-green-60);
+  --green-light: var(--ibm-green-10);
+  --red:         var(--ibm-red-60);
+  --red-light:   var(--ibm-red-10);
+  --yellow:      var(--ibm-yellow-30);
+  --yellow-bg:   var(--ibm-yellow-10);
+  --gray-100:    var(--ibm-gray-10);
+  --gray-200:    var(--ibm-gray-20);
+  --gray-700:    var(--ibm-gray-70);
+  --gray-900:    var(--ibm-gray-100);
+  --white:       var(--ibm-white);
+  --terminal-bg: #161616;
+
+  --font-sans: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --max-width: 860px;
+  --radius:    4px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--gray-900);
+  background: var(--white);
+}
+
+/* ── Site Header ──────────────────────────────────────────── */
+.site-header {
+  background: #0f62fe;
+  color: var(--white);
+  padding: 56px 24px 48px;
+  text-align: center;
+  border-bottom: 4px solid #0043ce;
+}
+.site-header .badge {
+  display: inline-block;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 2px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  margin-bottom: 20px;
+  font-family: var(--font-mono);
+}
+.site-header h1 {
+  font-size: clamp(1.75rem, 4vw, 2.625rem);
+  font-weight: 600;
+  line-height: 1.2;
+  max-width: 760px;
+  margin: 0 auto 14px;
+  letter-spacing: -.01em;
+}
+.site-header .subtitle {
+  font-size: 1rem;
+  opacity: .85;
+  margin-bottom: 24px;
+  font-weight: 400;
+}
+.site-header .meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: .875rem;
+  opacity: .75;
+}
+.site-header .meta span::before { content: '· '; }
+.site-header .meta span:first-child::before { content: ''; }
+
+/* ── Bob avatar ───────────────────────────────────────────── */
+.bob-avatar-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
+.bob-avatar-img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,.35));
+}
+
+/* ── Page layout ──────────────────────────────────────────── */
+.page-wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── Headings ─────────────────────────────────────────────── */
+h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 56px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-200);
+  letter-spacing: -.01em;
+}
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 32px 0 10px;
+}
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 24px 0 8px;
+}
+p { margin-bottom: 16px; font-size: 1rem; line-height: 1.6; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { color: var(--blue-dark); text-decoration: underline; }
+strong { font-weight: 600; }
+ul, ol { padding-left: 24px; margin-bottom: 16px; }
+li { margin-bottom: 4px; line-height: 1.6; }
+
+/* ── Inline code ──────────────────────────────────────────── */
+code {
+  font-family: var(--font-mono);
+  font-size: .875rem;
+  background: var(--ibm-gray-10);
+  color: var(--gray-900);
+  padding: 1px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--gray-200);
+}
+
+/* ── Code blocks ──────────────────────────────────────────── */
+.code-block {
+  margin: 24px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid #393939;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+}
+.code-block .code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #262626;
+  padding: 8px 16px;
+  border-bottom: 1px solid #393939;
+}
+.code-block .code-lang {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: #a8a8a8;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+.code-block .code-dots { display: flex; gap: 6px; }
+.code-block .code-dots span { width: 11px; height: 11px; border-radius: 50%; }
+.code-block .code-dots span:nth-child(1) { background: #ff5f56; }
+.code-block .code-dots span:nth-child(2) { background: #ffbd2e; }
+.code-block .code-dots span:nth-child(3) { background: #27c93f; }
+.code-block pre {
+  background: var(--terminal-bg);
+  color: #f4f4f4;
+  padding: 20px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: .875rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Callouts ─────────────────────────────────────────────── */
+.callout {
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 20px 0;
+  font-size: .9375rem;
+  line-height: 1.5;
+}
+.callout.info    { background: var(--ibm-blue-10);   border-left: 4px solid var(--blue); }
+.callout.warn    { background: var(--ibm-yellow-10); border-left: 4px solid var(--yellow); }
+.callout.success { background: var(--ibm-green-10);  border-left: 4px solid var(--green); }
+.callout.error   { background: var(--ibm-red-10);    border-left: 4px solid var(--red); }
+.callout strong  { display: block; margin-bottom: 4px; font-weight: 600; color: var(--gray-900); }
+
+/* ── Tables ───────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+thead tr { background: #0f62fe; color: var(--white); }
+thead th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: .875rem; letter-spacing: .01em; }
+tbody tr { border-bottom: 1px solid var(--gray-200); }
+tbody tr:nth-child(even) { background: var(--ibm-gray-10); }
+tbody tr:hover { background: var(--ibm-blue-10); }
+tbody td { padding: 12px 16px; font-size: .9375rem; vertical-align: top; }
+
+/* ── Footer ───────────────────────────────────────────────── */
+.site-footer {
+  background: #161616;
+  color: #a8a8a8;
+  text-align: center;
+  padding: 32px 24px;
+  font-size: .875rem;
+  font-family: var(--font-mono);
+  border-top: 4px solid var(--blue);
+}
+.site-footer .tags span {
+  display: inline-block;
+  background: #262626;
+  border: 1px solid #393939;
+  border-radius: 2px;
+  padding: 3px 10px; margin: 3px;
+  font-size: .75rem; color: #a8a8a8;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .site-header { padding: 40px 16px 32px; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  .page-wrap { padding: 0 16px 60px; }
+}
