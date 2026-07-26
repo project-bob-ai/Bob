@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building a Complete Order Management System in IBM i with IBM Bob and Premium Package for IBM i</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ibm-blue-60:   #0f62fe;
+      --ibm-blue-70:   #0043ce;
+      --ibm-blue-10:   #edf5ff;
+      --ibm-gray-100:  #161616;
+      --ibm-gray-70:   #525252;
+      --ibm-gray-20:   #e0e0e0;
+      --ibm-gray-10:   #f4f4f4;
+      --ibm-white:     #ffffff;
+      --ibm-green-60:  #198038;
+      --ibm-green-10:  #defbe6;
+      --ibm-red-60:    #da1e28;
+      --ibm-red-10:    #fff1f1;
+      --ibm-yellow-30: #f1c21b;
+      --ibm-yellow-10: #fdf6dd;
+
+      --blue:      var(--ibm-blue-60);
+      --blue-dark: var(--ibm-blue-70);
+      --green:     var(--ibm-green-60);
+      --red:       var(--ibm-red-60);
+      --yellow:    var(--ibm-yellow-30);
+      --gray-200:  var(--ibm-gray-20);
+      --gray-700:  var(--ibm-gray-70);
+      --gray-900:  var(--ibm-gray-100);
+      --white:     var(--ibm-white);
+      --term-bg:   #161616;
+
+      --font-sans: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --max-width: 860px;
+      --radius:    4px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--gray-900);
+      background: var(--white);
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .site-header {
+      background: var(--ibm-blue-60);
+      color: var(--white);
+      padding: 52px 24px 44px;
+      text-align: center;
+      border-bottom: 4px solid var(--ibm-blue-70);
+    }
+
+    .bob-avatar-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+    .bob-avatar-img {
+      width: 100px; height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.4));
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 2px;
+      font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px; margin-bottom: 18px;
+      font-family: var(--font-mono);
+    }
+
+    .site-header h1 {
+      font-size: clamp(1.625rem, 3.8vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      max-width: 740px;
+      margin: 0 auto 16px;
+      letter-spacing: -.015em;
+    }
+
+    .site-header .meta {
+      display: flex; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+      font-size: .875rem; opacity: .75;
+    }
+    .site-header .meta span::before { content: '· '; }
+    .site-header .meta span:first-child::before { content: ''; }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .tldr {
+      background: var(--ibm-blue-10);
+      border-left: 4px solid var(--blue);
+      max-width: var(--max-width);
+      margin: 40px auto 0;
+      padding: 16px 20px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: .9375rem;
+    }
+    .tldr strong { color: var(--blue-dark); font-weight: 600; }
+
+    .page-wrap {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Typography ──────────────────────────────────────────────────────── */
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin: 52px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--ibm-blue-60);
+      letter-spacing: -.01em;
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 32px 0 10px;
+    }
+
+    h4 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 22px 0 8px;
+    }
+
+    p { margin-bottom: 16px; font-size: 1rem; line-height: 1.65; }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--blue-dark); text-decoration: underline; }
+    strong { font-weight: 600; }
+
+    ul, ol { padding-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 6px; line-height: 1.65; }
+
+    /* ── Inline code ─────────────────────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: .875rem;
+      background: var(--ibm-gray-10);
+      color: var(--gray-900);
+      padding: 1px 6px;
+      border-radius: 2px;
+      border: 1px solid var(--gray-200);
+    }
+
+    /* ── Code blocks ─────────────────────────────────────────────────────── */
+    .code-block {
+      margin: 22px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid #393939;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .code-block .code-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      background: #262626; padding: 8px 16px;
+      border-bottom: 1px solid #393939;
+    }
+    .code-block .code-lang {
+      font-family: var(--font-mono); font-size: .75rem;
+      color: #a8a8a8; text-transform: uppercase; letter-spacing: .1em;
+    }
+    .code-block .code-dots { display: flex; gap: 6px; }
+    .code-block .code-dots span { width: 11px; height: 11px; border-radius: 50%; }
+    .code-block .code-dots span:nth-child(1) { background: #ff5f56; }
+    .code-block .code-dots span:nth-child(2) { background: #ffbd2e; }
+    .code-block .code-dots span:nth-child(3) { background: #27c93f; }
+    .code-block pre {
+      background: var(--term-bg); color: #f4f4f4;
+      padding: 20px; overflow-x: auto;
+      font-family: var(--font-mono); font-size: .875rem;
+      line-height: 1.6; margin: 0;
+    }
+
+    /* ── Screenshot placeholder ──────────────────────────────────────────── */
+    .screenshot-wrap {
+      margin: 22px 0; border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .screenshot-wrap img { width: 100%; display: block; }
+    .screenshot-wrap figcaption {
+      background: var(--ibm-gray-10);
+      border-top: 1px solid var(--gray-200);
+      padding: 7px 14px;
+      font-size: .8125rem; color: var(--gray-700);
+      font-family: var(--font-mono);
+    }
+    .screenshot-placeholder {
+      background: #1a1a1a;
+      border: 2px dashed #393939;
+      border-radius: var(--radius);
+      margin: 22px 0;
+      padding: 28px 20px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: .8125rem;
+      color: #6e6e6e;
+    }
+    .screenshot-placeholder span { display: block; color: #a8a8a8; margin-bottom: 4px; }
+
+    /* ── Diff / before-after ─────────────────────────────────────────────── */
+    .diff-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin: 22px 0;
+    }
+    @media (max-width: 640px) { .diff-wrap { grid-template-columns: 1fr; } }
+    .diff-pane { border-radius: var(--radius); overflow: hidden; }
+    .diff-pane .diff-label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px; font-size: .75rem; font-weight: 600;
+      font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em;
+    }
+    .diff-pane.before .diff-label { background: #2d1a1a; color: #ff8389; }
+    .diff-pane.after  .diff-label { background: #0e2316; color: #42be65; }
+    .diff-pane pre {
+      background: var(--term-bg); color: #f4f4f4;
+      padding: 16px; font-family: var(--font-mono);
+      font-size: .875rem; line-height: 1.6; margin: 0; overflow-x: auto;
+    }
+    .diff-pane.before pre .diff-line { color: #ff8389; }
+    .diff-pane.after  pre .diff-line { color: #42be65; }
+
+    /* ── Tables ──────────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+    thead tr { background: var(--ibm-blue-60); color: var(--white); }
+    thead th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: .875rem; }
+    tbody tr { border-bottom: 1px solid var(--gray-200); }
+    tbody tr:nth-child(even) { background: var(--ibm-gray-10); }
+    tbody tr:hover { background: var(--ibm-blue-10); }
+    tbody td { padding: 11px 16px; font-size: .9375rem; vertical-align: top; }
+
+    /* ── Callouts ────────────────────────────────────────────────────────── */
+    .callout {
+      border-radius: var(--radius); padding: 14px 18px;
+      margin: 18px 0; font-size: .9375rem; line-height: 1.55;
+    }
+    .callout.info    { background: var(--ibm-blue-10);   border-left: 4px solid var(--blue); }
+    .callout.warn    { background: var(--ibm-yellow-10); border-left: 4px solid var(--yellow); }
+    .callout.success { background: var(--ibm-green-10);  border-left: 4px solid var(--green); }
+    .callout.error   { background: var(--ibm-red-10);    border-left: 4px solid var(--red); }
+    .callout .callout-label  { display: block; margin-bottom: 4px; font-weight: 600; color: var(--gray-900); }
+    .callout strong  { font-weight: 600; color: var(--gray-900); }
+
+    /* ── Blockquote ──────────────────────────────────────────────────────── */
+    blockquote {
+      border-left: 4px solid var(--blue);
+      margin: 18px 0; padding: 12px 20px;
+      background: var(--ibm-gray-10);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-style: italic; color: var(--gray-700); font-size: .9375rem;
+    }
+    blockquote p { margin: 0; }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    .site-footer {
+      background: #161616; color: #a8a8a8;
+      text-align: center; padding: 32px 24px;
+      font-size: .875rem; font-family: var(--font-mono);
+      border-top: 4px solid var(--blue);
+    }
+    .site-footer .artifacts { margin-bottom: 12px; }
+    .site-footer .artifacts span {
+      display: inline-block; margin: 4px 10px; color: #c6c6c6;
+    }
+    .site-footer .tags { margin-top: 12px; }
+    .site-footer .tags span {
+      display: inline-block; background: #262626;
+      border: 1px solid #393939; border-radius: 2px;
+      padding: 3px 10px; margin: 3px; font-size: .75rem; color: #a8a8a8;
+    }
+    .author-byline {
+      display: flex; align-items: center; gap: 10px;
+      justify-content: center; margin-top: 18px;
+      font-size: .875rem; opacity: .8;
+    }
+    .author-byline .author-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .made-with {
+      margin-top: 22px; padding-top: 14px;
+      border-top: 1px solid #393939;
+      font-size: .75rem; color: #525252;
+    }
+
+    /* ── Video embed ─────────────────────────────────────────────────────── */
+    .video-wrap {
+      margin: 22px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      position: relative;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    @media (max-width: 600px) {
+      .site-header { padding: 36px 16px 28px; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 1.25rem; }
+      .page-wrap { padding: 0 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="bob-avatar-wrap">
+    <img src="../images/Bob.png" alt="IBM Bob" class="bob-avatar-img" />
+  </div>
+  <div class="header-badge">IBM Bob · Premium Package for IBM i (PPI) · IBM i Developer Mode</div>
+  <h1>Building a Complete Order Management System in IBM i with IBM Bob and Premium Package for IBM i</h1>
+  <div class="author-byline">
+    <div class="author-avatar">MC</div>
+    <span>By Matta Chandrashekar &nbsp;·&nbsp; July 2026</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE BODY                                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+  <div class="tldr">
+    <strong>Quick Summary —</strong> I provided <strong>IBM Bob</strong> with a single design document and one prompt. Using <strong>IBM i Developer Mode</strong> with the <strong>Premium Package for IBM i (PPI)</strong>, it generated a complete Order Management System in IBM i that closely followed the design. The solution included Db2 tables with referential integrity, ILE service programs, DDS display files, interactive maintenance programs, a binding directory, and sample data procedures. The IBM i capabilities available through Premium Package for IBM i (PPI) handled source generation and compilation, allowing every source member to compile successfully. The result was a well-structured, production-ready application. An application that would typically take an experienced IBM i developer two to three weeks to build was completed in a single development session.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="usecase">Building an Order Management System from a Design Document</h2>
+
+  <p>
+    I wanted to find out how far <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for IBM i (PPI)</strong>, could go when given a complete application design. Instead of asking it to generate a single program or service procedure, I challenged it to build an entire Order Management System in IBM i from a detailed design document using just one prompt.
+  </p>
+
+  <p>
+    The design document defined every aspect of the application, including the Db2 table schema with referential integrity, ILE service program architecture, procedure interfaces, DDS display file record formats, binding directory configuration, compilation sequence, and the shared <code>ApiResult_t</code> data structure used across the service layer. It represented the kind of detailed technical specification that IBM i development teams use to build production applications.
+  </p>
+
+  <p>
+    The objective was straightforward: determine whether IBM Bob, using <strong>IBM i Developer Mode</strong> and the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, could transform that design into a complete, well-structured application. I wanted to see whether it could generate the correct architecture, organize the project, respect build dependencies, and produce source members that were ready to compile with minimal manual effort.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/Design doc.png" alt="Design document used as the single source of truth for the application build" />
+    <figcaption>The design document provided to IBM Bob as the single source of truth</figcaption>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="ppi">IBM Bob Premium Package for IBM i — What Makes This Possible</h2>
+
+  <p>
+    Before getting into the build, it's worth explaining what made this possible. The capabilities demonstrated throughout this blog are powered by the <strong>Premium Package for IBM i (PPI)</strong>, which extends IBM i Developer Mode with IBM i-specific capabilities, workflows, skills, and tools.
+  </p>
+
+  <p>
+    <strong>Premium Package for IBM i (PPI)</strong> is the add-on that gives IBM Bob deep IBM i capabilities. It includes <strong>IBM i Developer Mode</strong>, IBM i Database Mode, IBM i-specific workflows, IBM i Skills, and direct access to your IBM i system through Code for IBM i. Together, these capabilities enable IBM Bob to work directly with IBM i resources while following IBM i development practices.
+  </p>
+
+  <p>With <strong>IBM i Developer Mode</strong> enabled, IBM Bob can:</p>
+
+  <ul>
+    <li>Read and update source members directly on your IBM i system</li>
+    <li>Compile IBM i objects such as display files, SQL RPGLE programs, service programs, and binding directories while reviewing compiler output in real time</li>
+    <li>Run live SQL against IBM i SQL Services, including <code>QSYS2</code> and <code>SYSIBM/SYSDUMMY1</code></li>
+    <li>Analyze job logs and diagnose compilation or runtime issues without leaving the development session</li>
+    <li>Use IBM i Skills to apply IBM i best practices, including DDS rules, ILE calling conventions, binder source requirements, and other platform-specific development patterns</li>
+  </ul>
+
+  <p>
+    These capabilities allow IBM i Developer Mode to do more than generate source code. It can work directly with your IBM i environment, compile objects, analyze the results, identify issues, and continue building the application within the same development session.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="prompt">The Prompt — Just One Line</h2>
+
+  <p>
+    With the design document already available on the IFS at <code>/home/bob4ipgmr/Order Management.md</code>, everything IBM Bob needed was in one place. The document defined the complete three-tier application architecture, including the Db2 table definitions, procedure interfaces, DDS display file record formats, binding directory structure, and the required compilation sequence.
+  </p>
+
+  <p>I gave IBM Bob a single prompt:</p>
+
+  <div class="screenshot-wrap">
+    <img src="images/The Prompt.png" alt="The single prompt given to IBM Bob" />
+    <figcaption>The single prompt used to initiate the entire application build</figcaption>
+  </div>
+
+  <p>
+    That was the entire instruction. I didn't break the work into smaller tasks or guide IBM Bob through the implementation step by step. I expected it to ask for clarification or begin with a small part of the application — perhaps generating the database tables first and waiting for further instructions. Instead, it took the design document, understood the complete scope of the application, and started building it end to end.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="plan">IBM Bob's Plan — Understanding the Design Before Writing Code</h2>
+
+  <p>
+    Before generating any source, IBM Bob used the IFS access capabilities available through the <strong>Premium Package for IBM i (PPI)</strong> to read the design document. Rather than immediately creating source members, it first analyzed the application and presented a structured implementation plan.
+  </p>
+
+  <p>Here is the response IBM Bob generated before writing a single line of source:</p>
+
+  <div class="screenshot-wrap">
+    <img src="images/IBM Bob's Plan.png" alt="IBM Bob's structured implementation plan before generating any source" />
+    <figcaption>IBM Bob's implementation plan, generated before writing a single line of source</figcaption>
+  </div>
+
+  <p>
+    What impressed me wasn't just the implementation plan — it was the order of execution. Without any additional guidance, IBM Bob correctly identified the dependency chain defined in the design document. It understood that modules needed to be created before service programs, service programs before the binding directory, and the binding directory before the interactive programs. That entire build sequence came directly from the design document.
+  </p>
+
+  <p>
+    As per the design document, the full build covered:
+  </p>
+
+  <ul>
+    <li>All Db2 tables defined in the document — SQL DDL with identity columns, check constraints, and referential integrity</li>
+    <li>SQL stored procedures for sample data population — one per domain</li>
+    <li>SQLRPGLE service modules compiled as <code>*MODULE</code> with <code>ctl-opt nomain</code> — one per business domain</li>
+    <li>Binder source in a dedicated <code>QBNDSRC2</code> source file (record length 92, not 256)</li>
+    <li>All <code>*SRVPGM</code> objects bound into the <code>ORDERMGMT/ORDERMGMT</code> binding directory</li>
+    <li>All DDS display files compiled with <code>CRTDSPF</code></li>
+    <li>All IBM i maintenance programs using <code>bnddir('ORDERMGMT')</code></li>
+  </ul>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="skills">IBM i Skills — What IBM Bob Used and Why</h2>
+
+  <p>
+    One of the strengths of the <strong>Premium Package for IBM i (PPI)</strong> is its collection of <strong>IBM i Skills</strong>. These are IBM i-specific knowledge modules that IBM Bob automatically selects based on the task it is performing. Rather than relying on generic code generation, IBM Bob applies the most appropriate IBM i Skill for each stage of the application.
+  </p>
+
+  <p>For this application, IBM Bob used the following IBM i Skills:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Skill</th><th>Used For</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>SQL / Db2 for i Skill</strong></td>
+          <td>SQL DDL with identity columns, FK constraints, <code>ON DELETE CASCADE</code>, <code>RUNSQLSTM COMMIT(*NONE) NAMING(*SYS)</code></td>
+        </tr>
+        <tr>
+          <td><strong>ILE RPG Free Format Skill</strong></td>
+          <td>Fully free <code>**free</code> SQLRPGLE modules with <code>ctl-opt nomain</code>, correct <code>QMHSNDPM</code> prototype, forward <code>dcl-pr</code> patterns</td>
+        </tr>
+        <tr>
+          <td><strong>DDS Display Files Skill</strong></td>
+          <td>Message subfile pattern (<code>MSGSFL</code>/<code>MSGCTL</code>), <code>OVERLAY</code> on maintenance screens, <code>INDARA</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="screenshot-wrap">
+    <img src="images/IBM i Skills.png" alt="IBM i Skills selected by IBM Bob during the application build" />
+    <figcaption>IBM i Skills automatically selected by IBM Bob for each stage of the build</figcaption>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="database">Step 1 — Building the Database Layer with Db2 Tables</h2>
+
+  <p>
+    The first step was building the database layer. Using <strong>IBM i Developer Mode</strong>, IBM Bob generated all the SQL DDL source members in <code>ORDERMGMT/QSQLSRC</code>. Each table was created using <code>CREATE TABLE</code> and followed the design document exactly, including identity columns for primary keys, check constraints, and referential integrity. The design called for six tables covering every business domain of the application.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Source Member</th><th>Creates Table</th><th>Key Design Points</th></tr></thead>
+      <tbody>
+        <tr><td><code>QSQLSRC/CUSTOMERS</code></td><td><code>ORDERMGMT/CUSTOMER</code></td><td>Identity PK, unique EMAIL, STATUS check (A/I/S), audit timestamps</td></tr>
+        <tr><td><code>QSQLSRC/PRODUCTS</code></td><td><code>ORDERMGMT/PRODUCT</code></td><td>Identity PK, PRICE/COST decimals, STOCK_QTY, STATUS check (A/D/O)</td></tr>
+        <tr><td><code>QSQLSRC/ORDERS</code></td><td><code>ORDERMGMT/ORDER</code></td><td>FK to CUSTOMER, STATUS check (P/C/S/X/H), SUBTOTAL/TAX/SHIP/TOTAL amounts</td></tr>
+        <tr><td><code>QSQLSRC/ORDERLINES</code></td><td><code>ORDERMGMT/ORDERLINE</code></td><td>FK to ORDER (<code>ON DELETE CASCADE</code>), FK to PRODUCT (<code>ON DELETE RESTRICT</code>)</td></tr>
+        <tr><td><code>QSQLSRC/SHIPMENTS</code></td><td><code>ORDERMGMT/SHIPMENT</code></td><td>FK to ORDER, CARRIER, TRACKING_NO, STATUS check (P/I/T/D/R)</td></tr>
+        <tr><td><code>QSQLSRC/INVOICES</code></td><td><code>ORDERMGMT/INVOICE</code></td><td>FK to ORDER, AMOUNT_DUE/PAID, STATUS check (D/P/O/V/W)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The <code>CUSTOMER</code> table was the first thing I examined. I wanted to verify whether IBM Bob would generate the identity column using the recommended IBM i pattern. It did exactly that, using <code>GENERATED ALWAYS AS IDENTITY</code>, including the <code>START WITH 1 INCREMENT BY 1</code> clause that is sometimes missing in automatically generated SQL.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/CUSTOMER table.png" alt="CUSTOMER table DDL generated by IBM Bob" />
+    <figcaption>CUSTOMER table DDL with GENERATED ALWAYS AS IDENTITY, generated by IBM Bob</figcaption>
+  </div>
+
+  <p>
+    The <code>ORDERLINE</code> table also implemented the referential integrity rules defined in the design document. IBM Bob generated the foreign key constraints with <code>ON DELETE CASCADE</code>, ensuring that when an order is deleted, all associated order line records are automatically removed. This maintains data integrity without requiring additional application logic to handle the related line item records.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/Orders table.png" alt="ORDERLINE table DDL with ON DELETE CASCADE referential integrity" />
+    <figcaption>ORDERLINE table with FK constraints and ON DELETE CASCADE, as specified in the design document</figcaption>
+  </div>
+
+  <p>
+    Once the DDL was generated, IBM Bob compiled each source member using <code>RUNSQLSTM COMMIT(*NONE) NAMING(*SYS) MARGINS(200)</code>. Using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, it verified the compilation results before proceeding to the next stage of the application build.
+  </p>
+
+  <div class="callout success">
+    <span class="callout-label">All tables — severity 00.</span>
+    <code>CUSTOMER</code> · <code>PRODUCT</code> · <code>ORDER</code> · <code>ORDERLINE</code> · <code>SHIPMENT</code> · <code>INVOICE</code> — all created in <code>ORDERMGMT</code> with constraints intact.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="sampledata">Step 2 — Generating Sample Data with SQL Stored Procedures</h2>
+
+  <p>
+    After creating the database tables, IBM Bob generated five SQL stored procedures in <code>ORDERMGMT/QSQLSRC</code> to populate the application with realistic sample data for development and testing. Having representative data available from the beginning made it much easier to validate the service procedures and interactive programs as the application came together.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Source Member</th><th>Procedure</th><th>Records Inserted</th></tr></thead>
+      <tbody>
+        <tr><td><code>POPCUSTS</code></td><td><code>ORDERMGMT.POPCUSTS()</code></td><td>10 customers across multiple states</td></tr>
+        <tr><td><code>POPPRODS</code></td><td><code>ORDERMGMT.POPPRODS()</code></td><td>20 products with stock quantities and pricing</td></tr>
+        <tr><td><code>POPORDERS</code></td><td><code>ORDERMGMT.POPORDERS()</code></td><td>15 orders with line items and calculated totals</td></tr>
+        <tr><td><code>POPSHIPS</code></td><td><code>ORDERMGMT.POPSHIPS()</code></td><td>12 shipments linked to orders</td></tr>
+        <tr><td><code>POPINVCS</code></td><td><code>ORDERMGMT.POPINVCS()</code></td><td>12 invoices with payment status</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Each stored procedure begins with a <code>DELETE FROM</code> statement before inserting new data, making it safe to run repeatedly during development without creating duplicate records. IBM Bob also generated the procedures in the correct dependency order, loading customers and products first, followed by orders, and finally shipments and invoices to satisfy the foreign key relationships.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/POPCUSTS.png" alt="POPCUSTS stored procedure for loading sample customer data" />
+    <figcaption>POPCUSTS stored procedure, one of five SQL procedures generated for sample data loading</figcaption>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="servicetier">Step 3 — Building the Service Layer with SQLRPGLE Modules</h2>
+
+  <p>
+    This is where the application's core business logic comes together. Using <strong>IBM i Developer Mode</strong>, IBM Bob generated five fully free-format SQLRPGLE modules in <code>ORDERMGMT/QRPGLESRC</code>. Each module was compiled as a <code>*MODULE</code> using <code>CRTSQLRPGI OBJTYPE(*MODULE)</code>, following the recommended IBM i pattern where modules contain the procedure implementations and service programs expose those procedures through bound exports.
+  </p>
+
+  <p>
+    Every module uses <code>ctl-opt nomain</code>, making it a library of reusable procedures rather than a runnable program. Every procedure returns the shared <code>ApiResult_t</code> data structure defined in <code>QRPGLEREF/APIRESULT</code>.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/APIRESULT.png" alt="APIRESULT shared data structure used across all service procedures" />
+    <figcaption>The ApiResult_t shared result structure returned by every service procedure</figcaption>
+  </div>
+
+  <p>
+    Using a shared result structure across more than 30 service procedures was a key design decision documented in the specification, and IBM Bob implemented it consistently throughout the application. Every caller checks <code>result.success</code> and reads <code>result.message</code>, keeping the UI layer clean and avoiding scattered SQLSTATE handling across multiple programs.
+  </p>
+
+  <h3>CUSTOMER Module — <code>QRPGLESRC/CUSTOMER</code></h3>
+
+  <p>
+    The CUSTOMER module exports six procedures: <code>createCustomer</code>, <code>getCustomer</code>,
+    <code>updateCustomer</code>, <code>deleteCustomer</code>, <code>listCustomers</code>, and
+    <code>searchCustomers</code>. Each procedure returns the shared <code>ApiResult_t</code> result structure, with <code>createCustomer</code> returning the generated identity value of the new record in the message field.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/CUSTOMER Module.png" alt="CUSTOMER SQLRPGLE service module generated by IBM Bob" />
+    <figcaption>CUSTOMER SQLRPGLE module with six exported procedures, compiled as *MODULE</figcaption>
+  </div>
+
+  <h3>ORDER Module — <code>QRPGLESRC/ORDER</code></h3>
+
+  <p>
+    The ORDER module contains the most complex business logic in the application. The <code>addOrderLine</code> procedure inserts a new order line, updates product inventory, and recalculates the order totals within the same procedure. What impressed me was that IBM Bob generated this complete workflow directly from the design document. I didn't have to describe these steps individually — the required business logic was already defined in the specification, and IBM Bob implemented it accordingly.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/ORDER Module.png" alt="ORDER SQLRPGLE module showing addOrderLine with stock update and order total recalculation" />
+    <figcaption>addOrderLine procedure with embedded stock decrement and order total recalculation</figcaption>
+  </div>
+
+  <div class="callout success">
+    <span class="callout-label">All service modules — severity 00.</span>
+    <code>CUSTOMER</code> · <code>PRODUCT</code> · <code>ORDER</code> · <code>SHIPMENT</code> · <code>INVOICE</code> — all compiled as <code>*MODULE</code> using <code>CRTSQLRPGI OBJTYPE(*MODULE)</code>.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="srvpgm">Step 4 — Building the Service Programs and Binding Directory</h2>
+
+  <p>
+    After generating the SQLRPGLE modules, IBM Bob created the service programs by linking each module into a <code>*SRVPGM</code> using binder source stored in <code>ORDERMGMT/QBNDSRC2</code>. As defined in the design document, each binder source includes a signature string that identifies the exported interface. As long as new exports are appended without removing or reordering existing ones, applications already bound to the service program continue to work without requiring recompilation.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/Customer Binder Source.png" alt="Customer binder source in QBNDSRC2 with quoted mixed-case export symbols" />
+    <figcaption>QBNDSRC2/CUSTOMER binder source with quoted mixed-case procedure names</figcaption>
+  </div>
+
+  <p>
+    Each service program was then created using the same <code>CRTSRVPGM</code> pattern:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">CL — CRTSRVPGM</span>
+      <div class="code-dots"><span></span><span></span><span></span></div>
+    </div>
+    <pre>CRTSRVPGM SRVPGM(ORDERMGMT/CUSTOMER)
+          MODULE(ORDERMGMT/CUSTOMER)
+          EXPORT(*SRCFILE)
+          SRCFILE(ORDERMGMT/QBNDSRC2)
+          SRCMBR(CUSTOMER)
+          ACTGRP(*CALLER)
+          AUT(*EXCLUDE)</pre>
+  </div>
+
+  <p>
+    After all five service programs were created, IBM Bob built the binding directory and added
+    every service program as an entry:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">CL — binding directory</span>
+      <div class="code-dots"><span></span><span></span><span></span></div>
+    </div>
+    <pre>CRTBNDDIR BNDDIR(ORDERMGMT/ORDERMGMT) AUT(*EXCLUDE)
+ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/CUSTOMER *SRVPGM))
+ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/PRODUCT  *SRVPGM))
+ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/ORDER    *SRVPGM))
+ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/SHIPMENT *SRVPGM))
+ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/INVOICE  *SRVPGM))</pre>
+  </div>
+
+  <p>
+    Any UI program that specifies <code>bnddir('ORDERMGMT')</code> in its <code>ctl-opt</code>
+    automatically resolves calls to any of the 30+ exported procedures across all five service
+    programs — no library qualifier needed at call time.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="dds">Step 5 — Building the DDS Display Files</h2>
+
+  <p>
+    Next, IBM Bob generated all DDS display files in <code>ORDERMGMT/QDDSSRC</code> using the <strong>DDS Display Files Skill</strong>, one of the IBM i Skills available through the <strong>Premium Package for IBM i (PPI)</strong>. Each display file was compiled using <code>CRTDSPF</code>.
+  </p>
+
+  <h3>MAINMENU — <code>QDDSSRC/MAINMENU</code></h3>
+
+  <p>
+    The main menu uses two record formats: <code>MENUSCREEN</code> (the navigation screen) and
+    <code>MSGBAR</code> (an <code>OVERLAY</code> format on line 24 for status and error messages).
+    The split is deliberate — writing <code>MSGBAR</code> separately means the message line can be
+    updated without rewriting the entire screen.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/MAINMENU dspf.png" alt="MAINMENU DDS display file with MENUSCREEN and MSGBAR record formats" />
+    <figcaption>MAINMENU display file showing the MENUSCREEN and MSGBAR OVERLAY record formats</figcaption>
+  </div>
+
+  <h3>Maintenance Display Files — Message Subfile Pattern</h3>
+
+  <p>
+    The five maintenance display files (<code>CUSTMNT</code>, <code>PRODMNT</code>,
+    <code>ORDERMNT</code>, <code>SHIPMNT</code>, <code>INVMNT</code>) all use the standard IBM i
+    message subfile pattern — <code>MSGSFL</code> + <code>MSGCTL</code> on line 24. IBM Bob used the
+    DDS Display Files Skill to get the indicator wiring right: indicator 90 for display,
+    indicator 91 for clear, indicator 92 for initialise.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/CUSTMNT dspf.png" alt="CUSTMNT DDS display file using the standard IBM i message subfile pattern" />
+    <figcaption>CUSTMNT display file using the MSGSFL/MSGCTL message subfile pattern with indicator 90/91/92 wiring</figcaption>
+  </div>
+
+  <div class="callout success">
+    <span class="callout-label">All display files — severity 00.</span>
+    <code>MAINMENU</code> · <code>CUSTMNT</code> · <code>PRODMNT</code> · <code>ORDERMNT</code> · <code>SHIPMNT</code> · <code>INVMNT</code> — all compiled with <code>CRTDSPF</code>.
+  </div>
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="uiprograms">Step 6 — Building the IBM i Maintenance Programs</h2>
+
+  <p>
+    This was the most challenging part of the application build. IBM Bob generated all the maintenance programs in <code>ORDERMGMT/QRPGLESRC</code>, and this is where the collaboration between me and IBM Bob became particularly interesting. Not every program compiled successfully on the first attempt. What stood out was how IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, analyzed each compilation failure, identified the root cause, and applied the required fix without introducing unrelated changes.
+  </p>
+
+  <h3>MAINMENU — <code>QRPGLESRC/MAINMENU</code></h3>
+
+  <p>
+    The MAINMENU program acts as the application's navigation hub. It uses a dynamic <code>EXTPGM</code> prototype, a standard IBM i technique for late-bound program calls. The <code>programToCall</code> variable is assigned at runtime, allowing a single prototype to invoke all five maintenance programs. I hadn't seen this pattern generated automatically before. It eliminates the need for multiple hard-coded <code>dcl-pr</code> definitions and makes the menu easier to extend — adding another maintenance program simply requires another menu option.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/MAINMENU program.png" alt="MAINMENU RPG program using a dynamic EXTPGM prototype for late-bound program calls" />
+    <figcaption>MAINMENU program using the dynamic EXTPGM pattern to call all five maintenance programs</figcaption>
+  </div>
+
+  <h3>Maintenance Programs — <code>CUSTMNT</code>, <code>PRODMNT</code>, <code>SHIPMNT</code>, <code>INVMNT</code></h3>
+
+  <p>
+    All maintenance programs follow the same three-mode workflow: <strong>SEARCH</strong> — locate a record by its identifier; <strong>DISPLAY</strong> — display and update the selected record; <strong>ADD</strong> — create a new record. All database operations are performed through the service layer. The UI programs contain no embedded SQL, keeping the presentation layer separate from the business logic defined in the service programs.
+  </p>
+
+  <p>The following example shows the overall structure of the <code>CUSTMNT</code> program:</p>
+
+  <div class="screenshot-wrap">
+    <img src="images/CUSTMNT program.png" alt="CUSTMNT RPG program showing the three-mode SEARCH / DISPLAY / ADD structure" />
+    <figcaption>CUSTMNT maintenance program structure with no embedded SQL, all data operations through the service layer</figcaption>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="bugs">Resolving Compilation Issues</h2>
+
+  <p>
+    No IBM i application of this size compiles perfectly on the first attempt, and I wasn't expecting this one to either. What mattered was how IBM Bob responded when compilation errors occurred. Instead of regenerating entire programs, IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, analyzed the compiler output, identified the root cause of each failure, and applied only the changes required to resolve it. That approach preserved the existing source while making each fix precise and easy to review.
+  </p>
+
+  <p>The following sections walk through each of the six compilation issues encountered during the build.</p>
+
+  <!-- ── Bug 1 ── -->
+  <h3>Issue 1 — DDS Record Name Matches File Name (CPD5235)</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> <code>CRTDSPF</code> for <code>MAINMENU</code> failed with <code>CPD5235 — Record name same as file name</code>.
+  </div>
+
+  <p>
+    The original DDS named the primary record format <code>MAINMENU</code> — the same as the file.
+    This is a DDS rule: a record format name cannot match its containing file name. IBM Bob read
+    the compiler message, identified the violation, and made exactly two changes: renamed the
+    record format from <code>MAINMENU</code> to <code>MENUSCREEN</code> in the DDS source,
+    and updated the RPG program from <code>exfmt MAINMENU</code> to <code>exfmt MENUSCREEN</code>.
+    Nothing else changed.
+  </p>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — DDS (fails CPD5235)</div>
+      <pre><span class="diff-line">-      A          R MAINMENU</span>
+       A                                  1 28'ORDER MANAGEMENT SYSTEM'
+       ...
+
+<span class="diff-line">-      exfmt MAINMENU;</span></pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — renamed to MENUSCREEN</div>
+      <pre><span class="diff-line">+      A          R MENUSCREEN</span>
+       A                                  1 28'ORDER MANAGEMENT SYSTEM'
+       ...
+
+<span class="diff-line">+      exfmt MENUSCREEN;</span></pre>
+    </div>
+  </div>
+
+  <!-- ── Bug 2 ── -->
+  <h3>Issue 2 — QBNDSRC Record Length Too Long for CRTSRVPGM</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> <code>CRTSRVPGM</code> failed — binder source could not be read.
+  </div>
+
+  <p>
+    IBM Bob had initially created <code>QBNDSRC</code> with record length 256. The
+    <code>CRTSRVPGM</code> command requires binder source with a record length of 240 or less —
+    the standard is 92 characters. IBM Bob caught this from the error output, created a new source
+    file <code>QBNDSRC2</code> with record length 92, moved all five binder source members into it,
+    and recompiled all five service programs using the new file.
+  </p>
+
+  <div class="callout warn">
+    <span class="callout-label">Why this matters:</span>
+    This is one of those IBM i details that is rarely documented clearly. The 92-character record length for binder source is a platform convention, not something you would find easily in general RPG documentation. IBM i Developer Mode, through the IBM i capabilities available in the <strong>Premium Package for IBM i (PPI)</strong>, identified this constraint from the compiler output and applied the correct fix.
+  </div>
+
+  <!-- ── Bug 3 ── -->
+  <h3>Issue 3 — Binder Symbol Names Must Be Quoted for Mixed Case</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> Service programs compiled, but at runtime procedures could not be resolved — binding failures on first call.
+  </div>
+
+  <p>
+    Binder source <code>EXPORT SYMBOL(createCustomer)</code> without quotes causes the ILE linker
+    to uppercase the symbol name to <code>CREATECUSTOMER</code>. The actual exported procedure
+    is <code>createCustomer</code> in mixed case because RPG uses <code>extproc(*dclcase)</code>
+    by convention. The symbol mismatch meant the binding appeared to succeed but failed silently
+    at call time.
+  </p>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — unquoted (uppercased to CREATECUSTOMER)</div>
+      <pre><span class="diff-line">-  EXPORT SYMBOL(createCustomer)</span>
+<span class="diff-line">-  EXPORT SYMBOL(getCustomer)</span>
+<span class="diff-line">-  EXPORT SYMBOL(updateCustomer)</span></pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — quoted (preserves mixed case)</div>
+      <pre><span class="diff-line">+  EXPORT SYMBOL('createCustomer')</span>
+<span class="diff-line">+  EXPORT SYMBOL('getCustomer')</span>
+<span class="diff-line">+  EXPORT SYMBOL('updateCustomer')</span></pre>
+    </div>
+  </div>
+
+  <!-- ── Bug 4 ── -->
+  <h3>Issue 4 — <code>exec sql CALL</code> Inside a Proc Breaks <code>RPGPPOPT(*LVL2)</code></h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> All five maintenance programs failed with <code>RNF0256 — Specification found between procedures</code> — 84+ errors per program.
+  </div>
+
+  <p>
+    The original <code>showMsg</code> procedure used <code>exec sql CALL QSYS2.QCMDEXC(...)</code>
+    to send messages. With <code>RPGPPOPT(*LVL2)</code>, the SQL precompiler injects fixed-format
+    D-spec data structure blocks at every <code>exec sql</code> statement. When that injection
+    happens <em>inside</em> a <code>dcl-proc</code>, the injected DS declarations land between
+    procedures — which the RPG compiler treats as a fatal structure error.
+  </p>
+
+  <p>
+    IBM Bob replaced <code>exec sql CALL QSYS2.QCMDEXC(...)</code> in all five programs with a
+    direct call to the <code>QMHSNDPM</code> API. No SQL inside <code>showMsg</code> — no
+    precompiler injection — no problem.
+  </p>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — exec sql CALL inside dcl-proc</div>
+      <pre>dcl-proc showMsg;
+<span class="diff-line">-  exec sql CALL QSYS2.QCMDEXC(</span>
+<span class="diff-line">-    'SNDPGMMSG MSG(''' + msgText + ''')'</span>
+<span class="diff-line">-    : 32702);</span>
+end-proc;</pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — direct QMHSNDPM call (no SQL)</div>
+      <pre>dcl-proc showMsg;
+<span class="diff-line">+  QMHSNDPM('CPF9898' : 'QCPFMSG   *LIBL     '</span>
+<span class="diff-line">+           : msgDta : %len(%trimr(msgDta))</span>
+<span class="diff-line">+           : mtype : '*' : 0 : msgKey : errCode);</span>
+end-proc;</pre>
+    </div>
+  </div>
+
+  <!-- ── Bug 5 ── -->
+  <h3>Issue 5 — Main Body Code After Procedures (RNF0256)</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> All five maintenance programs still failed <code>RNF0256</code> even after fixing <code>showMsg</code>.
+  </div>
+
+  <p>
+    In fully free-format RPG, all <code>dcl-proc</code> blocks must come <em>after</em> the
+    main-body executable code. The original structure placed the <code>dou exitFlag;</code>
+    loop and variable declarations <em>after</em> the last <code>dcl-proc</code>. Code after
+    a <code>dcl-proc</code> is treated as being between procedures — which is invalid.
+  </p>
+
+  <p>
+    IBM Bob restructured every program into the correct four-part layout: global declarations first, followed by forward prototypes for all local procedures, then the main executable body, and finally the procedure implementations at the end of the source member.
+  </p>
+
+  <div class="screenshot-wrap">
+    <img src="images/RNF0256.png" alt="Correct fully free-format RPG program structure resolving RNF0256" />
+    <figcaption>Correct fully free-format program structure: global declarations, forward prototypes, main body, then procedure implementations</figcaption>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-label">Why forward prototypes matter.</span>
+    In fully free-format RPG, when a local procedure is called from the main executable body but its implementation appears later in the source member, a forward <code>dcl-pr</code> prototype must be declared before the main body so the compiler knows the procedure's interface at the point of the call. IBM Bob added the required forward prototypes for every local procedure across all five maintenance programs without any additional guidance.
+  </div>
+
+  <!-- ── Bug 6 ── -->
+  <h3>Issue 6 — ORDERMNT: Cursor Scope and Multi-Statement Lines</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> <code>ORDERMNT</code> had two additional problems even after applying the fixes above: (a) <code>DECLARE lineCur CURSOR</code> was inside the <code>loadLines</code> procedure, breaking SQL precompiler variable resolution; (b) multiple assignments on one line like <code>LN1LID = lc_lineId; LN1PID = lc_prodId;</code> caused <code>RNF5508 — End of free-format statement is not blank</code>.
+  </div>
+
+  <p>
+    <code>ORDERMNT</code> is the only UI program with embedded SQL — it reads <code>ORDERLINE</code>
+    rows with a cursor and must be compiled as <code>CRTSQLRPGI OBJTYPE(*PGM)</code>. The cursor
+    declaration was inside a procedure, which meant the SQL precompiler could not resolve the host
+    variables at compile time.
+  </p>
+
+  <p>
+    IBM Bob applied three targeted fixes:
+  </p>
+
+  <ol>
+    <li>Moved the <code>DECLARE lineCur CURSOR</code> to module level — outside all procedures — so the precompiler sees the host variables</li>
+    <li>Inlined the <code>OPEN</code>/<code>FETCH</code>/<code>CLOSE</code> cursor loop directly in the main body, not inside a <code>dcl-proc</code></li>
+    <li>Put each assignment on its own line — no multiple statements per line</li>
+  </ol>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — cursor inside proc, multi-stmt lines</div>
+      <pre>dcl-proc loadLines;
+<span class="diff-line">-  exec sql DECLARE lineCur CURSOR FOR</span>
+<span class="diff-line">-    SELECT LINE_ID, PRODUCT_ID ...</span>
+<span class="diff-line">-    WHERE ORDER_ID = :ord.orderId ;</span>
+
+<span class="diff-line">-  LN1LID = lc_lineId; LN1PID = lc_prodId;</span>
+end-proc;</pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — cursor at module level, one stmt per line</div>
+      <pre>// Module level — precompiler sees host variables
+<span class="diff-line">+exec sql DECLARE lineCur CURSOR FOR</span>
+<span class="diff-line">+  SELECT LINE_ID, PRODUCT_ID, QUANTITY,</span>
+<span class="diff-line">+         UNIT_PRICE, LINE_TOTAL</span>
+<span class="diff-line">+    FROM ORDERMGMT/ORDERLINE</span>
+<span class="diff-line">+   WHERE ORDER_ID = :ord.orderId ;</span>
+
+<span class="diff-line">+  LN1LID = lc_lineId;</span>
+<span class="diff-line">+  LN1PID = lc_prodId;</span></pre>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <span class="callout-label">All six issues resolved.</span>
+    Throughout the build, IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, analyzed the compiler output after each build, identified the root cause of every failure, applied only the necessary changes, and recompiled the affected source. In every case, the fixes were limited to the relevant lines of code — the programs were never regenerated from scratch.
+  </div>
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="results">Final Compilation Results — 32 Objects, All at Severity 00</h2>
+
+  <p>
+    After resolving all six issues, IBM Bob performed a final build of the entire application using <strong>IBM i Developer Mode</strong> with the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>. The build completed successfully, with all 32 objects compiling at severity 00.
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Object</th><th>Type</th><th>Library</th><th>Compile Command</th><th>Result</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>CUSTOMER</code></td><td><code>*FILE</code> (PF)</td><td>ORDERMGMT</td><td><code>RUNSQLSTM</code></td><td>✅ 00</td></tr>
+        <tr><td><code>PRODUCT</code></td><td><code>*FILE</code> (PF)</td><td>ORDERMGMT</td><td><code>RUNSQLSTM</code></td><td>✅ 00</td></tr>
+        <tr><td><code>ORDER</code></td><td><code>*FILE</code> (PF)</td><td>ORDERMGMT</td><td><code>RUNSQLSTM</code></td><td>✅ 00</td></tr>
+        <tr><td><code>ORDERLINE</code></td><td><code>*FILE</code> (PF)</td><td>ORDERMGMT</td><td><code>RUNSQLSTM</code></td><td>✅ 00</td></tr>
+        <tr><td><code>SHIPMENT</code></td><td><code>*FILE</code> (PF)</td><td>ORDERMGMT</td><td><code>RUNSQLSTM</code></td><td>✅ 00</td></tr>
+        <tr><td><code>INVOICE</code></td><td><code>*FILE</code> (PF)</td><td>ORDERMGMT</td><td><code>RUNSQLSTM</code></td><td>✅ 00</td></tr>
+        <tr><td><code>CUSTOMER</code></td><td><code>*MODULE</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*MODULE)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>PRODUCT</code></td><td><code>*MODULE</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*MODULE)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>ORDER</code></td><td><code>*MODULE</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*MODULE)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>SHIPMENT</code></td><td><code>*MODULE</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*MODULE)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>INVOICE</code></td><td><code>*MODULE</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*MODULE)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>CUSTOMER</code></td><td><code>*SRVPGM</code></td><td>ORDERMGMT</td><td><code>CRTSRVPGM</code></td><td>✅ Created</td></tr>
+        <tr><td><code>PRODUCT</code></td><td><code>*SRVPGM</code></td><td>ORDERMGMT</td><td><code>CRTSRVPGM</code></td><td>✅ Created</td></tr>
+        <tr><td><code>ORDER</code></td><td><code>*SRVPGM</code></td><td>ORDERMGMT</td><td><code>CRTSRVPGM</code></td><td>✅ Created</td></tr>
+        <tr><td><code>SHIPMENT</code></td><td><code>*SRVPGM</code></td><td>ORDERMGMT</td><td><code>CRTSRVPGM</code></td><td>✅ Created</td></tr>
+        <tr><td><code>INVOICE</code></td><td><code>*SRVPGM</code></td><td>ORDERMGMT</td><td><code>CRTSRVPGM</code></td><td>✅ Created</td></tr>
+        <tr><td><code>ORDERMGMT</code></td><td><code>*BNDDIR</code></td><td>ORDERMGMT</td><td><code>CRTBNDDIR</code> + <code>ADDBNDDIRE</code></td><td>✅ Created</td></tr>
+        <tr><td><code>MAINMENU</code></td><td><code>*FILE</code> (DSPF)</td><td>ORDERMGMT</td><td><code>CRTDSPF</code></td><td>✅ 00</td></tr>
+        <tr><td><code>CUSTMNT</code></td><td><code>*FILE</code> (DSPF)</td><td>ORDERMGMT</td><td><code>CRTDSPF</code></td><td>✅ 00</td></tr>
+        <tr><td><code>PRODMNT</code></td><td><code>*FILE</code> (DSPF)</td><td>ORDERMGMT</td><td><code>CRTDSPF</code></td><td>✅ 00</td></tr>
+        <tr><td><code>ORDERMNT</code></td><td><code>*FILE</code> (DSPF)</td><td>ORDERMGMT</td><td><code>CRTDSPF</code></td><td>✅ 00</td></tr>
+        <tr><td><code>SHIPMNT</code></td><td><code>*FILE</code> (DSPF)</td><td>ORDERMGMT</td><td><code>CRTDSPF</code></td><td>✅ 00</td></tr>
+        <tr><td><code>INVMNT</code></td><td><code>*FILE</code> (DSPF)</td><td>ORDERMGMT</td><td><code>CRTDSPF</code></td><td>✅ 00</td></tr>
+        <tr><td><code>MAINMENU</code></td><td><code>*PGM</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*PGM)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>CUSTMNT</code></td><td><code>*PGM</code></td><td>ORDERMGMT</td><td><code>CRTBNDRPG</code></td><td>✅ 00</td></tr>
+        <tr><td><code>PRODMNT</code></td><td><code>*PGM</code></td><td>ORDERMGMT</td><td><code>CRTBNDRPG</code></td><td>✅ 00</td></tr>
+        <tr><td><code>ORDERMNT</code></td><td><code>*PGM</code></td><td>ORDERMGMT</td><td><code>CRTSQLRPGI OBJTYPE(*PGM)</code></td><td>✅ 00</td></tr>
+        <tr><td><code>SHIPMNT</code></td><td><code>*PGM</code></td><td>ORDERMGMT</td><td><code>CRTBNDRPG</code></td><td>✅ 00</td></tr>
+        <tr><td><code>INVMNT</code></td><td><code>*PGM</code></td><td>ORDERMGMT</td><td><code>CRTBNDRPG</code></td><td>✅ 00</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout success">
+    <span class="callout-label">32 IBM i Objects. All at Severity 00. All from One Prompt.</span>
+    All Db2 tables · All SQLRPGLE service modules · All service programs · Binding directory · All DDS display files · All IBM i maintenance programs. This wasn't a collection of isolated code samples or prototype programs. It was a complete, production-structured IBM i application generated from a single design document and one prompt.
+  </div>
+
+  <div class="screenshot-wrap">
+    <img src="images/Final Compilation Results.png" alt="Final compilation results showing all 32 IBM i objects at severity 00" />
+    <figcaption>Final build results: 32 objects, all compiled at severity 00</figcaption>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="productivity">Productivity Comparison</h2>
+
+  <p>
+    Based on my experience building this application, here is my estimate of the time required to develop it manually compared with using <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for IBM i (PPI)</strong>:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Task</th><th>Manually</th><th>With IBM i Developer Mode</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>All SQL DDL tables with constraints and FK rules</td>
+          <td>3–4 hours</td>
+          <td>~5 minutes</td>
+        </tr>
+        <tr>
+          <td>All SQLRPGLE service modules (CRUD + business logic)</td>
+          <td>3–4 days</td>
+          <td>~15 minutes</td>
+        </tr>
+        <tr>
+          <td>All binder source files + <code>CRTSRVPGM</code></td>
+          <td>1 hour</td>
+          <td>Included</td>
+        </tr>
+        <tr>
+          <td>Binding directory setup</td>
+          <td>20 minutes</td>
+          <td>Included</td>
+        </tr>
+        <tr>
+          <td>All DDS display files (subfiles, overlays, message subfiles)</td>
+          <td>2–3 days</td>
+          <td>~10 minutes</td>
+        </tr>
+        <tr>
+          <td>All IBM i maintenance programs (three-mode SEARCH/DISPLAY/ADD)</td>
+          <td>3–4 days</td>
+          <td>~20 minutes</td>
+        </tr>
+        <tr>
+          <td>Diagnosing and fixing all 6 compile issues</td>
+          <td>2–3 days</td>
+          <td>~30 minutes</td>
+        </tr>
+        <tr style="font-weight:700; background:#e8f4fd;">
+          <td>Total estimated</td>
+          <td>~2–3 weeks</td>
+          <td>&lt; 2 hours</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    One result stood out: the time spent diagnosing compilation issues. The six issues encountered while building this application — including DDS record format naming, binder source record length, quoted mixed-case export symbols, SQL precompiler behavior, fully free-format RPG program structure, and cursor scope — are all IBM i-specific edge cases. Even for an experienced IBM i developer, identifying and resolving some of these issues can take considerable time. Throughout the application build, IBM Bob analyzed the compiler output, identified the root cause of each failure, applied targeted fixes, and recompiled until every object compiled successfully.
+  </p>
+
+  <h3>What Made This Possible</h3>
+
+  <div class="callout success">
+    Every IBM i capability used to build this application was provided by the <strong>Premium Package for IBM i (PPI)</strong>. That includes reading the design document from the IFS, creating IBM i source members, compiling objects, analyzing compiler output, diagnosing build failures, and applying targeted fixes directly on the IBM i system. The IBM i Skills — including the SQL / Db2 for i Skill, ILE RPG Free Format Skill, DDS Display Files Skill, and ILE Service Programs Skill — provided the IBM i-specific knowledge needed to generate the application's architecture and resolve platform-specific issues throughout the build. Without the <strong>Premium Package for IBM i (PPI)</strong>, this would primarily be a code generation exercise. With <strong>IBM i Developer Mode</strong> and the <strong>Premium Package for IBM i (PPI)</strong>, IBM Bob becomes a development partner, capable of building, compiling, validating, and refining an application directly on your IBM i system.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="screens">Watch It in Action</h2>
+
+  <p>
+    A full walkthrough of the Order Management System in IBM i running live, built using
+    <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for IBM i (PPI)</strong>.
+  </p>
+
+  <div class="video-wrap">
+    <iframe src="https://www.youtube.com/embed/mWJGFaJLYIo?si=ucTIe4rEGquunGRh"
+            title="Building a Complete Order Management System in IBM i with IBM Bob"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="nextsteps">Next Steps</h2>
+
+  <p>
+    If you want to try <strong>IBM Bob</strong> and <strong>IBM Bob Premium Package for IBM i (PPI)</strong>
+    yourself, here are the resources to get started:
+  </p>
+
+  <ul>
+    <li>
+      <strong>Welcome to IBM Bob</strong> —
+      <a href="https://bob.ibm.com/docs/ide" target="_blank" rel="noopener">bob.ibm.com/docs/ide</a>
+    </li>
+    <li>
+      <strong>Start Your Free Trial</strong> —
+      <a href="https://bob.ibm.com/trial" target="_blank" rel="noopener">bob.ibm.com/trial</a>
+    </li>
+    <li>
+      <strong>IBM Bob Premium Package for IBM i (PPI)</strong> —
+      <a href="https://bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index" target="_blank" rel="noopener">bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index</a>
+    </li>
+    <li>
+      <strong>Frequently Asked Questions</strong> —
+      <a href="https://bob.ibm.com/docs/ide/faq" target="_blank" rel="noopener">bob.ibm.com/docs/ide/faq</a>
+    </li>
+  </ul>
+
+</div><!-- .page-wrap -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="tags">
+    <span>IBM i</span>
+    <span>5250</span>
+    <span>ILE RPG</span>
+    <span>SQLRPGLE</span>
+    <span>DDS</span>
+    <span>Db2 for i</span>
+    <span>Service Programs</span>
+    <span>Binding Directory</span>
+    <span>IBM Bob</span>
+    <span>Developer Mode</span>
+    <span>Premium Package for i</span>
+    <span>PPI</span>
+    <span>IBM i Skills</span>
+    <span>AI-Assisted</span>
+    <span>Order Management</span>
+  </div>
+  <div class="made-with">Made with IBM Bob · IBM Bob Premium Package for IBM i (PPI) · IBM i Developer Mode</div>
+</footer>
+
+</body>
+</html>
+
