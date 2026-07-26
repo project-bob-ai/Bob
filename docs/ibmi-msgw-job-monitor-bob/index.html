@@ -246,7 +246,8 @@
     .callout.warn    { background: var(--ibm-yellow-10); border-left: 4px solid var(--yellow); }
     .callout.success { background: var(--ibm-green-10);  border-left: 4px solid var(--green); }
     .callout.error   { background: var(--ibm-red-10);    border-left: 4px solid var(--red); }
-    .callout strong  { display: block; margin-bottom: 4px; font-weight: 600; color: var(--gray-900); }
+    .callout .callout-label  { display: block; margin-bottom: 4px; font-weight: 600; color: var(--gray-900); }
+    .callout strong  { font-weight: 600; color: var(--gray-900); }
 
     /* ── Blockquote ──────────────────────────────────────────────────────── */
     blockquote {
@@ -312,8 +313,8 @@
   <div class="bob-avatar-wrap">
     <img src="../images/Bob.png" alt="IBM Bob" class="bob-avatar-img" />
   </div>
-  <div class="header-badge">IBM Bob · IBM Bob Premium Package for i (PPI) · IBM i Developer Mode</div>
-  <h1>Building a Real IBM i MSGW Job Monitor with IBM Bob — IBM i Developer Mode in IBM Bob Premium Package for i (PPI)</h1>
+  <div class="header-badge">IBM Bob · Premium Package for IBM i (PPI) · IBM i Developer Mode</div>
+  <h1>Building a Real-Time MSGW Job Monitor on IBM i with IBM i Developer Mode</h1>
   <div class="author-byline">
     <div class="author-avatar">MC</div>
     <span>By Matta Chandrashekar &nbsp;·&nbsp; July 2026</span>
@@ -326,142 +327,73 @@
 <div class="page-wrap">
 
   <div class="tldr">
-    <strong>Quick Summary —</strong> By enabling <strong>IBM Bob Premium Package for i (PPI)</strong> and
-    switching to <strong>IBM i Developer Mode</strong>, I built a fully working real-time MSGW job monitoring
-    subfile from scratch — DDS, SQLRPGLE, compile, debug, and production-ready — in under an hour.
-    The same work done manually would have taken roughly two days.
+    <strong>Quick Summary —</strong> This blog demonstrates how <strong>IBM Bob Premium Package for IBM i (PPI)</strong> and <strong>IBM i Developer Mode</strong> accelerated the development of a production-ready, real-time MSGW job monitor. From generating DDS and SQLRPGLE to compiling and debugging the application, the entire solution was completed in under an hour — a task that would typically take nearly two days using a traditional manual approach.
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="usecase">The Use Case — MSGW Job Monitoring for L1 Operations</h2>
 
   <p>
-    In most IBM i shops, experienced IBM i developers have no trouble handling MSGW jobs. They open <code>WRKACTJOB</code>,
-    filter by status, and act. But production monitoring is increasingly shared with
-    <strong>Level 1 service desk analysts</strong> — people who do not have an IBM i background.
+    In most IBM i environments, experienced developers can handle MSGW jobs without difficulty. They know how to open <code>WRKACTJOB</code>, filter jobs by status, identify the ones waiting in MSGW, and take the appropriate action. However, production monitoring is increasingly handled by Level 1 (L1) service desk analysts who may have little or no IBM i experience.
   </p>
 
   <p>
-    When a batch job enters <strong>MSGW (Message Wait)</strong> status it has stopped. It is waiting for
-    someone to reply to a system message. The existing process asked L1 analysts to scroll through hundreds
-    of jobs in <code>WRKACTJOB</code>, spot the MSGW ones, and figure out what to do. That is not realistic
-    for someone who was never trained on IBM i.
+    When a batch job enters <strong>MSGW (Message Wait)</strong> status, it has stopped processing and is waiting for a response to a system message. The traditional approach required L1 analysts to search through hundreds of active jobs in <code>WRKACTJOB</code>, identify the jobs in MSGW, determine the reason for the message, and then decide what to do next. For someone without IBM i knowledge, that process is slow, confusing, and prone to mistakes.
   </p>
 
   <p>
-    What they needed was a focused screen: only MSGW jobs, with labelled action options right there. No commands
-    to know. Open it, see the problem, take action.
+    The requirement was straightforward: provide a simple screen that displays only the jobs in MSGW and offers clear, labelled actions for each one. Analysts should be able to identify the problem and respond without remembering IBM i commands or navigating multiple green-screen displays.
   </p>
 
   <p>
-    That is what I built — using <strong>IBM i Developer Mode</strong>, enabled by installing
-    <strong>IBM Bob Premium Package for i (PPI)</strong>.
+    This is the solution I built using <strong>IBM i Developer Mode</strong>, enabled through the <strong>IBM Bob Premium Package for IBM i (PPI)</strong>.
   </p>
-
-  <!-- ─────────────────────────────────────────────────────────────────── -->
-  <h2 id="setup">Getting Started with IBM i Developer Mode in IBM Bob Premium Package for i (PPI)</h2>
-
-  <p>
-    <strong>IBM Bob Premium Package for i (PPI)</strong> is the add-on that extends IBM Bob with AI
-    capabilities tailored for IBM i application development. It includes <strong>IBM i Developer Mode</strong>,
-    IBM i Database Mode, IBM i-specific workflows, skills, and tools. By providing IBM Bob with direct access
-    to your IBM i system, it enables you to work more effectively across the entire application lifecycle —
-    generating &amp; explaining code, building and testing projects, creating documentation, and modernizing
-    legacy applications.
-  </p>
-
-  <p>
-    Before describing what happened, it is worth explaining the setup — because it changes what
-    "using IBM Bob" actually means.
-  </p>
-
-  <p>
-    <strong>IBM Bob</strong> is a development partner. When you install
-    <strong>IBM Bob Premium Package for i (PPI)</strong> and switch to
-    <strong>IBM i Developer Mode</strong>, Bob gains platform-specific knowledge: reading source members,
-    compiling programs, running live SQL queries, checking job logs, and more.
-  </p>
-
-  <p>
-    With Developer Mode active, Bob can compile a DDS source member, read the compiler output in real time,
-    run a query against <code>QSYS2</code>, and inspect a job log — all without leaving the conversation.
-    That tight feedback loop is what makes the whole experience different from pasting generated code into an editor.
-  </p>
-
-  <h3>Connect to an IBM i</h3>
-
-  <p>
-    <strong>IBM Bob Premium Package for i (PPI)</strong> requires an active connection to an IBM i system
-    via <strong>Code for IBM i</strong>. Code for IBM i connects over SSH, so SSH must be running on your
-    IBM i system — see the IBM i prerequisites above for details.
-  </p>
-
-  <!-- Screenshot: IBM i Developer Mode -->
-  <div class="screenshot-wrap">
-    <img src="images/IBM i Developer Mode.png" alt="IBM i Developer Mode — enabled via IBM Bob Premium Package for i (PPI)" />
-    <figcaption>IBM i Developer Mode — enabled after installing <strong>IBM Bob Premium Package for i (PPI)</strong></figcaption>
-  </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="prompt">Starting with a Simple Prompt</h2>
 
   <p>
-    I kept it short deliberately. I wanted to see what Bob would do with a high-level requirement before
-    I added any constraints.
+    I deliberately kept the initial prompt short. I wanted to see how far IBM Bob could go with only a high-level requirement before I started adding implementation details or constraints.
   </p>
 
-  <div class="code-block">
-    <div class="code-header">
-      <span class="code-lang">User Prompt</span>
-      <div class="code-dots"><span></span><span></span><span></span></div>
-    </div>
-    <pre>An operations team needs a real-time job monitoring screen on IBM i.
-Write a fully free RPGLE program and its DDS display file that lists all
-jobs currently in MSGW (message wait) status. Operators can take action
-on each job.</pre>
-  </div>
+  <p>
+    I didn't provide a field list, mention IBM i SQL Services, describe the subfile layout, or specify any DDS keywords. I simply described the problem I wanted to solve.
+  </p>
 
   <p>
-    No field list. No mention of SQL services. No mention of subfiles or DDS keywords. Just the problem.
-    IBM Bob did not ask clarifying questions or produce something generic — it came back with a full plan.
+    Rather than returning a generic response, IBM Bob generated a detailed implementation plan that broke the solution into logical development steps. It identified the major components required to build the application before generating any code.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="plan">Bob's Implementation Plan</h2>
 
   <p>
-    Before writing a single line of code, IBM Bob came back with a structured implementation plan. That was the
-    first surprise. It laid out:
+    Before generating any code, IBM Bob returned a structured implementation plan. That was the first thing that caught my attention. Instead of jumping straight into code generation, it outlined the overall design, including:
   </p>
 
   <ul>
-    <li>Which data source to use — and why</li>
-    <li>The screen architecture it would build</li>
-    <li>What operator actions to support</li>
-    <li>Which source files and members to create</li>
+    <li>The data source it would use and why</li>
+    <li>The screen architecture</li>
+    <li>The operator actions it would support</li>
+    <li>The source files and members it planned to create</li>
   </ul>
 
-  <!-- Screenshot: IBM Bob Developer Mode chat showing the implementation plan -->
+  <!-- Screenshot: IBM i Developer Mode chat showing the implementation plan -->
   <div class="screenshot-wrap">
     <img src="images/BobImplementation Plan.png" alt="IBM Bob — implementation plan" />
     <figcaption>IBM Bob — structured plan produced before any code was written</figcaption>
   </div>
 
   <p>
-    On the data source, IBM Bob selected <code>QSYS2.ACTIVE_JOB_INFO()</code>, an IBM i SQL table function
-    that returns a real-time snapshot of active jobs, filtered with <code>WHERE JOB_STATUS = 'MSGW'</code>.
+    For the data source, IBM Bob selected <code>QSYS2.ACTIVE_JOB_INFO()</code>, an IBM i SQL table function that provides a real-time snapshot of active jobs. It planned to retrieve only jobs in MSGW status by filtering the results with <code>WHERE JOB_STATUS = 'MSGW'</code>.
   </p>
 
   <p>
-    I had used <code>ACTIVE_JOB_INFO</code> before. What surprised me was that IBM Bob chose it independently
-    and explained why: it is SQL-native — no CL commands, no <code>WRKACTJOB</code>, no screen-scraping. You
-    query it like a table and get rows back. For a screen that needs real-time job data, it is the right tool.
+    I had used <code>ACTIVE_JOB_INFO()</code> before, so I immediately recognized the approach. What impressed me was that IBM Bob arrived at the same solution on its own and explained the reasoning behind it. Because the service is SQL-based, there is no need to call CL commands or automate <code>WRKACTJOB</code>. You simply query the service like any other table and retrieve the information you need. For a real-time MSGW monitoring application, it was a logical choice.
   </p>
 
   <p>
-    For the screen design, IBM Bob planned a DDS display file with a subfile — one scrollable row per MSGW
-    job, a fixed FOOTER record on lines 22–23 for the function key legend, and a message subfile on line 24
-    for operator feedback. Seven operator actions mapped to CL commands:
+    For the user interface, IBM Bob proposed a DDS display file with a subfile to display one row for each MSGW job. The design also included a fixed footer on lines 22–23 for the function key legend and a message subfile on line 24 to provide operator feedback. It also mapped seven operator actions to the appropriate CL commands, giving the application the functionality needed for day-to-day production support.
   </p>
 
   <div class="table-wrap">
@@ -480,18 +412,17 @@ on each job.</pre>
   </div>
 
   <p>
-    That upfront step was more valuable than I expected — it gave me a chance to review the direction before
-    any code existed. If I had wanted a different data source or a different set of actions, that was the right
-    moment to say so.
+    That planning step turned out to be more valuable than I expected. It gave me an opportunity to review the overall approach before any code was generated. If I wanted to use a different data source, change the screen design, or support a different set of actions, that was the right time to make those changes.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="skills">IBM i Developer Mode — Skills in Action</h2>
 
   <p>
-    Developer Mode gives Bob access to a set of <strong>IBM i Skills</strong> — specialised knowledge modules
-    that activate automatically based on the task. For this project, two skills were involved.
+    One thing I noticed while building the application was how IBM i Developer Mode automatically selected the appropriate IBM i skills based on the task. Rather than relying on general AI knowledge, IBM Bob used specialised IBM i skills that understood IBM i development patterns and platform-specific conventions.
   </p>
+
+  <p>Two IBM i skills were used while building this application.</p>
 
   <!-- Screenshot: IBM i Developer Mode — Skills in Action -->
   <div class="screenshot-wrap">
@@ -500,27 +431,18 @@ on each job.</pre>
   </div>
 
   <p>
-    <strong>DDS Display Files Skill</strong> (<code>dds-premier-basics</code> / <code>dds-display-file</code>) —
-    When generating the display file, Bob used the DDS Display Files skill. It carries specific IBM i knowledge
-    that is hard to find in general documentation: the correct behaviour of <code>OVERLAY</code> on a subfile
-    control record, the rule that <code>COLOR</code> only applies to named output fields (not unnamed literals),
-    and how message subfiles are wired through <code>QMHSNDPM</code>. That depth is what allowed Bob to
-    produce a compilable DDS on the first attempt.
+    <strong>DDS Display Files Skill</strong> (<code>dds-premier-basics</code> / <code>dds-display-file</code>) — When generating the display file, IBM Bob used the DDS Display Files skill. It includes IBM i-specific knowledge that is difficult to find in general programming references, such as the correct use of <code>OVERLAY</code> on a subfile control record, the rule that <code>COLOR</code> applies only to named output fields (not unnamed literals), and how message subfiles are integrated using <code>QMHSNDPM</code>. That knowledge allowed IBM Bob to generate a DDS display file that compiled successfully on the first attempt.
   </p>
 
   <p>
-    <strong>ILE RPG Free Format Skill</strong> (<code>rpg-premier-basics</code> / <code>rpg-fundamentals</code>) —
-    When generating the RPGLE program, Bob used the ILE RPG free-format skill, specifically the
-    <code>**free</code> SQLRPGLE sub-skill. This gave Bob the knowledge to declare the display file with
-    <code>SFILE(MSGSFL: WkRRN)</code> — essential for subfile I/O — declare <code>INDDS</code>, and use
-    the correct <code>QCMDEXC</code> prototype. Both of those details turn out to matter, as you will see later.
+    <strong>ILE RPG Free-Format Skill</strong> (<code>rpg-premier-basics</code> / <code>rpg-fundamentals</code>) — When generating the SQLRPGLE program, IBM Bob automatically switched to the ILE RPG Free-Format skill, specifically the SQLRPGLE sub-skill. It generated IBM i-specific constructs such as <code>SFILE(MSGSFL: WkRRN)</code> for subfile processing, declared the display file with <code>INDDS</code>, and used the correct <code>QCMDEXC</code> prototype. These are the kinds of implementation details that are easy to overlook but are essential for a working IBM i application.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="codegen">Code Generation</h2>
 
   <p>
-    Bob generated two source members directly on the IBM i system through Developer Mode:
+    Using <strong>IBM i Developer Mode</strong>, IBM Bob generated two source members directly on the IBM i system:
   </p>
 
   <ul>
@@ -530,26 +452,18 @@ on each job.</pre>
 
   <h3>The Display File — MSGWDSPF</h3>
 
-  <!-- Screenshot: IBM Bob Developer Mode showing the generated MSGWDSPF source -->
+  <!-- Screenshot: IBM i Developer Mode showing the generated MSGWDSPF source -->
   <div class="screenshot-wrap">
     <img src="images/The Subfile Record-MSGSFL.png" alt="MSGSFL — subfile record format generated by IBM Bob" />
     <figcaption>MSGSFL — subfile record format, generated using the DDS Display Files Skill</figcaption>
   </div>
 
   <p>
-    The DDS had five record formats: <code>MSGSFL</code> (subfile), <code>MSGCTL</code> (subfile control),
-    <code>FOOTER</code> (function key legend, lines 22–23), <code>MSGQSFL</code> and <code>MSGQCTL</code>
-    (message subfile on line 24).
+    The DDS display file contained five record formats: <code>MSGSFL</code> (subfile), <code>MSGCTL</code> (subfile control), <code>FOOTER</code> (function key legend on lines 22–23), and <code>MSGQSFL</code> and <code>MSGQCTL</code> for the message subfile displayed on line 24.
   </p>
 
   <p>
-    One detail in the subfile record stood out. IBM Bob added a hidden 28-character field
-    <code>SFQJOB</code> to carry the full qualified job name — format <code>number/user/name</code> — on
-    every subfile row. I had not asked for it. But it was the right engineering decision: CL commands like
-    <code>HLDJOB</code> and <code>ENDJOB</code> require the fully qualified job name in
-    <code>number/user/name</code> format. Storing it as a hidden subfile field means the RPGLE program
-    reads it directly from the subfile record when the operator presses Enter — no string parsing, no
-    lookup, no risk of assembling it incorrectly from individual parts.
+    One implementation detail immediately caught my attention. IBM Bob added a hidden 28-character field <code>SFQJOB</code> to store the fully qualified job name (<code>number/user/name</code>) for each subfile row. I hadn't included that requirement in my prompt, but it turned out to be exactly the right design choice. Commands such as <code>HLDJOB</code> and <code>ENDJOB</code> require the fully qualified job name. By storing it as a hidden subfile field, the RPGLE program can read the value directly from the selected subfile record when the operator presses Enter. There is no need to reconstruct the job name from separate fields, perform string manipulation, or query the data again. The required value is already available.
   </p>
 
   <!-- Screenshot: MSGCTL subfile control record showing CTJOBCNT color logic -->
@@ -559,9 +473,7 @@ on each job.</pre>
   </div>
 
   <p>
-    The job count field is green when MSGW jobs are present and yellow when the list is empty. To make
-    <code>COLOR</code> work, IBM Bob correctly defined <code>CTJOBCNT</code> as a <em>named</em> output field —
-    the <code>COLOR</code> keyword in DDS is only valid on named fields, not on unnamed constants.
+    Another nice touch was the job count indicator. IBM Bob displayed the count in green when MSGW jobs were present and yellow when no jobs were found. To support that, it correctly defined <code>CTJOBCNT</code> as a named output field, because the <code>COLOR</code> keyword in DDS applies only to named output fields — not to unnamed constants.
   </p>
 
   <h3>The RPGLE Program — MSGWMON</h3>
@@ -573,9 +485,7 @@ on each job.</pre>
   </div>
 
   <p>
-    The <code>SFILE(MSGSFL: WkRRN)</code> keyword in the file declaration is essential — without it, the
-    compiler does not recognise <code>MSGSFL</code> as a subfile format and <code>READC</code>, <code>WRITE</code>,
-    and <code>UPDATE</code> on it fail. The ILE RPG Free Format Skill got this right.
+    One of the first things I noticed in the generated RPGLE program was the file declaration: <code>SFILE(MSGSFL: WkRRN)</code>. This keyword is essential for subfile processing. Without it, the compiler does not recognise <code>MSGSFL</code> as a subfile format, and operations such as <code>READC</code>, <code>WRITE</code>, and <code>UPDATE</code> on the subfile fail. The ILE RPG Free-Format Skill generated the declaration correctly on the first attempt.
   </p>
 
   <!-- Screenshot: MSGWMON — querying QSYS2.ACTIVE_JOB_INFO IBM i SQL Service -->
@@ -585,14 +495,11 @@ on each job.</pre>
   </div>
 
   <p>
-    IBM Bob identified <code>QSYS2.ACTIVE_JOB_INFO()</code> as the right IBM i SQL Service for this job —
-    it returns a real-time snapshot of all active jobs on the system, queryable like a standard SQL table.
-    No CL commands, no screen-scraping. The cursor filters with <code>WHERE JOB_STATUS = 'MSGW'</code> so
-    only the jobs that need attention are returned. One technical detail Bob handled correctly:
-    <code>JOB_NAME</code> from <code>ACTIVE_JOB_INFO</code> is already the fully qualified name in
-    <code>number/user/name</code> format — <code>327961/BOB4IPGMR/PGMA</code> — not just the short job name.
-    Bob used a nested <code>LOCATE</code> + <code>SUBSTR</code> expression to extract the short name for the
-    display column, while storing the full qualified name in <code>SFQJOB</code> for use when building CL commands.
+    For retrieving the job information, IBM Bob chose <code>QSYS2.ACTIVE_JOB_INFO()</code>, which is the IBM i SQL Service designed to provide a real-time view of active jobs. Because it is an SQL service, there is no need to call CL commands. The cursor simply filters the results with <code>WHERE JOB_STATUS = 'MSGW'</code>, returning only the jobs that require attention.
+  </p>
+
+  <p>
+    Another implementation detail caught my attention. The <code>JOB_NAME</code> column returned by <code>QSYS2.ACTIVE_JOB_INFO()</code> already contains the fully qualified job name in <code>number/user/name</code> format — for example, <code>327961/BOB4IPGMR/PGMA</code> — rather than just the short job name. IBM Bob generated a nested <code>LOCATE</code> and <code>SUBSTR</code> expression to extract the short job name for display in the subfile while preserving the fully qualified job name in <code>SFQJOB</code>. That hidden field was then used when constructing CL commands, ensuring the correct job was always referenced.
   </p>
 
   <!-- Screenshot: QCMDEXC prototype -->
@@ -617,8 +524,7 @@ on each job.</pre>
   <h2 id="compile">First Compilation</h2>
 
   <p>
-    Bob compiled both members directly from the chat — running <code>CRTDSPF</code> and
-    <code>CRTSQLRPGI</code> on the live IBM i system and reading the results in real time.
+    With both source members generated, I asked IBM Bob to compile them directly from the chat. Using <strong>IBM i Developer Mode</strong>, it ran <code>CRTDSPF</code> for the display file and <code>CRTSQLRPGI</code> for the SQLRPGLE program on the live IBM i system, then reported the compiler results in real time.
   </p>
 
   <!-- Screenshot: Compile output — both members clean -->
@@ -628,41 +534,32 @@ on each job.</pre>
   </div>
 
   <div class="callout success">
-    <strong>Clean compile — first attempt.</strong>
-    <code>MSGWDSPF</code>: <code>CPC7301</code> — created in <code>BOB4IPGMR</code>.<br/>
-    <code>MSGWMON</code>: highest severity 00, zero errors, zero warnings.
-    The 46 informational messages (<code>*RNF7066</code>, <code>*RNF7031</code>) are expected — they flag
-    the message subfile format names managed via <code>QMHSNDPM</code> rather than direct RPG I/O.
+    <span class="callout-label">Both source members compiled successfully on the first attempt.</span>
+    <code>MSGWDSPF</code>: <code>CPC7301</code> — Display file created in <code>BOB4IPGMR</code>.<br/>
+    <code>MSGWMON</code>: Highest severity 00, zero errors, zero warnings. The 46 informational messages (<code>RNF7066</code> and <code>RNF7031</code>) were expected because they relate to the message subfile formats managed through <code>QMHSNDPM</code>, rather than direct RPG I/O.
   </div>
 
   <p>
-    I called the program. The screen came up. The MSGW job that happened to be active on the test system
-    appeared in the list correctly. One prompt, a plan, a compile, and a working screen — in under fifteen minutes.
-    But I was not done testing.
+    I then called the program. The display opened successfully, and the MSGW job that was active on the test system appeared in the subfile exactly as expected. At that point, I had gone from a single prompt to an implementation plan, generated source members, a successful compilation, and a working screen — all in less than fifteen minutes. However, compiling successfully was only the first step. The next stage was to verify that every operator action behaved correctly under real conditions.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="enhancements">My Enhancement Requests</h2>
 
-  <p>
-    After the first working version I made two small requests:
-  </p>
+  <p>After the first working version, I made two small enhancement requests:</p>
 
   <ol>
-    <li>Remove the duplicate <code>F5=Refresh</code> label from the subfile control header — it was already in the FOOTER on line 23.</li>
-    <li>Confirm the job count color logic — green when jobs are present, yellow when the list is empty.</li>
+    <li>Remove the duplicate <code>F5=Refresh</code> label from the subfile control header, since it was already displayed in the <code>FOOTER</code> on line 23.</li>
+    <li>Confirm that the job count was displayed in green when MSGW jobs were present and yellow when the list was empty.</li>
   </ol>
 
   <p>
-    Bob changed exactly that one constant and nothing else — no file regeneration, just the one line.
-    That precision is one of the things that makes Developer Mode genuinely useful for targeted fixes.
+    IBM Bob updated only the requested changes. For the duplicate <code>F5=Refresh</code> label, it modified a single constant without regenerating the entire display file or changing unrelated code.
   </p>
 
-  <div class="callout success">
-    <strong>Targeted edits, not regeneration.</strong>
-    Bob changed exactly what needed to change. Every targeted request touched
-    only the affected lines — which matters when you need to understand what changed.
-  </div>
+  <p>
+    That level of precision stood out to me. Each enhancement was limited to the affected lines, making it easy to review the changes and understand exactly what had been modified. For small refinements and maintenance tasks, that targeted editing approach is far more useful than regenerating an entire source member.
+  </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="overlay">The Runtime Bug</h2>
@@ -672,25 +569,18 @@ on each job.</pre>
   </p>
 
   <p>
-    After the enhancements compiled, I pressed F5 to refresh and the function key legend on lines 22–23
-    had disappeared. Every refresh wiped it. I reported it to IBM Bob the way I would report a bug to a colleague:
+    After the enhancements compiled, I pressed <strong>F5</strong> to refresh the screen, and the function key legend on lines 22–23 had disappeared. Every refresh wiped it. I reported it to IBM Bob the same way I would report a bug to a colleague:
   </p>
 
   <blockquote>
     <p>"The function key footer disappears every time the subfile refreshes."</p>
   </blockquote>
 
-  <p>
-    Bob came back with a precise explanation:
-  </p>
+  <p>IBM Bob came back with a precise explanation:</p>
 
   <blockquote>
     <p>
-      "The root cause is that <code>EXFMT MSGCTL</code> performs a full-screen write. Without
-      <code>OVERLAY</code> on the subfile control record, the 5250 data stream clears all screen positions
-      not explicitly written by that operation — including the <code>FOOTER</code> record on lines 22–23.
-      Adding <code>OVERLAY</code> to <code>MSGCTL</code> instructs the 5250 write to merge its output with
-      the existing screen content rather than replacing it entirely."
+      "The root cause is that <code>EXFMT MSGCTL</code> performs a full-screen write. Without <code>OVERLAY</code> on the subfile control record, the 5250 data stream clears all screen positions not explicitly written by that operation, including the <code>FOOTER</code> record on lines 22–23. Adding <code>OVERLAY</code> to <code>MSGCTL</code> instructs the 5250 write to merge its output with the existing screen content rather than replacing it entirely."
     </p>
   </blockquote>
 
@@ -717,33 +607,29 @@ on each job.</pre>
   </div>
 
   <p>
-    One DDS keyword. Bob caught it, explained the underlying 5250 write semantics, applied the fix, and after
-    recompiling the footer stayed on screen through every subsequent refresh.
+    One DDS keyword. IBM Bob identified the problem, explained the underlying 5250 screen update behaviour, applied the fix, and after recompiling, the footer remained visible through every subsequent refresh.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="bugs">The Bugs Bob Also Caught</h2>
 
   <p>
-    The footer issue was the most visible problem. There were a few others. I want to be honest about them
-    because they show how the collaboration with IBM Bob actually worked.
+    The footer issue was the most visible problem, but it wasn't the only one. I want to be transparent about the other issues because they show how working with IBM Bob actually unfolded. The first version wasn't perfect, but the debugging experience was just as valuable as the initial code generation.
   </p>
 
   <h3>The Qualified Job Name Was Corrupt</h3>
 
   <div class="callout error">
-    <strong>Symptom:</strong> All CL commands — <code>HLDJOB</code>, <code>ENDJOB</code>, every option —
-    were failing with "job not found" errors.
+    <span class="callout-label">Symptom</span>
+    Every operator action that executed a CL command — <code>HLDJOB</code>, <code>ENDJOB</code>, and the other options — failed with a "job not found" error.
   </div>
 
   <p>
-    The root cause: <code>JOB_NAME</code> from <code>QSYS2.ACTIVE_JOB_INFO()</code> already returns the
-    fully qualified name in <code>number/user/name</code>
-    format. The initial code was rebuilding it by concatenating
-    <code>JobNumber + '/' + JobUser + '/' + JobName</code>. For a job like
-    <code>327961/BOB4IPGMR/PGMA</code>, the result was <code>327961/BOB4IPGMR/327961/BOB4</code> —
-    double-encoded and truncated at 28 characters. Every CL command was failing with "job not found" or
-    "matching parenthesis not found" because the closing <code>)</code> fell past position 28 and got dropped.
+    The <code>JOB_NAME</code> column returned by <code>QSYS2.ACTIVE_JOB_INFO()</code> already contains the fully qualified job name in <code>number/user/name</code> format. The initial code rebuilt the value by concatenating <code>JobNumber + '/' + JobUser + '/' + JobName</code>. For a job such as <code>327961/BOB4IPGMR/PGMA</code>, that produced <code>327961/BOB4IPGMR/327961/BOB4</code> — double-encoded and then truncated to 28 characters. As a result, every generated CL command referenced an invalid job name, producing errors such as "job not found" or "matching parenthesis not found", because the closing parenthesis was truncated along with the command string.
+  </p>
+
+  <p>
+    I reported the behaviour, and IBM Bob traced it back to the semantics of the <code>ACTIVE_JOB_INFO()</code> result set. It corrected the logic by using the fully qualified job name returned by the SQL service instead of rebuilding it. No other code needed to change.
   </p>
 
   <!-- Screenshot: SFQJOB assignment corrected -->
@@ -767,27 +653,15 @@ on each job.</pre>
     </div>
   </div>
 
-  <p>
-    Bob identified the issue from the error symptom, pointed to the <code>ACTIVE_JOB_INFO</code> column
-    semantics, and made the targeted fix. Nothing else changed.
-  </p>
-
   <h3>The QCMDEXC Prototype Was Wrong</h3>
 
   <div class="callout error">
-    <strong>Symptom:</strong> Every <code>QCMDEXC</code> call failed with
-    "String contains a character that is not valid" — even syntactically correct commands like
-    <code>WRKJOB JOB(327961/BOB4IPGMR/PGMA)</code>.
+    <span class="callout-label">Symptom</span>
+    Every <code>QCMDEXC</code> call failed with "String contains a character that is not valid" — even for syntactically correct commands such as <code>WRKJOB JOB(327961/BOB4IPGMR/PGMA)</code>.
   </div>
 
   <p>
-    The initial prototype declared <code>Cmd</code> as
-    <code>varchar(32702) options(*varsize)</code>. When you pass a <code>varchar</code> variable to a
-    <code>varchar OPTIONS(*VARSIZE)</code> parameter in ILE RPG, the compiler includes the internal
-    2-byte length prefix as part of the data stream. <code>QCMDEXC</code> receives those two bytes as the
-    first characters of the command string — so <code>WRKJOB JOB(...)</code> arrived as
-    <code>'&nbsp;&nbsp;WRKJOB J...'</code> — two invisible leading characters — and the system responded
-    with "character not valid".
+    The initial prototype declared the command parameter as <code>varchar(32702) options(*varsize)</code>. When a <code>VARCHAR</code> variable is passed to a <code>VARCHAR OPTIONS(*VARSIZE)</code> parameter in ILE RPG, the compiler includes the internal two-byte length prefix as part of the data passed to the procedure. As a result, <code>QCMDEXC</code> received those two bytes at the beginning of the command string instead of the first command character. Although the command looked correct in the source code, the value received by <code>QCMDEXC</code> effectively began with two invisible characters before <code>WRKJOB</code>. The system therefore rejected the command with the "character not valid" error.
   </p>
 
   <!-- Screenshot: QCMDEXC prototype diff -->
@@ -814,24 +688,19 @@ end-pr;</pre>
   </div>
 
   <div class="callout warn">
-    <strong>Why this matters:</strong>
-    The symptom gives you almost no information about where to look. You end up adding trace code, checking
-    the command string character by character, eventually finding the ILE RPG calling-convention documentation
-    carefully enough to notice the parameter type issue. Bob diagnosed this from the symptom description alone.
+    <span class="callout-label">Why this matters:</span>
+    This is the kind of problem that can take a long time to diagnose manually. The error message gives very little indication of the actual cause. A typical investigation would involve adding trace code, inspecting the command string, and eventually reviewing the ILE RPG calling convention closely enough to identify the parameter definition. IBM Bob identified the problem from the symptom description alone and generated the targeted fix without requiring broader changes to the program.
   </div>
 
   <h3>Option 5 Was Using the Wrong Command</h3>
 
   <div class="callout error">
-    <strong>Symptom:</strong> Option 5 (Display Messages) failed with "parameter not valid".
+    <span class="callout-label">Symptom</span>
+    Option 5 (Display Messages) failed with a "parameter not valid" error.
   </div>
 
   <p>
-    The initial implementation used <code>WRKMSG JOB(...)</code>. The <code>WRKMSG</code> command takes a
-    message queue object path — like <code>WRKMSG MSGQ(QGPL/QSYSOPR)</code> — not a job name. It does not
-    accept a <code>JOB()</code> parameter. The correct command for viewing a job's inquiry messages is
-    <code>WRKJOB JOB(...) OPTION(*MSG)</code>. IBM Bob caught it and corrected it. A small thing, but an
-    operator typing <code>5</code> and getting a command failure would have undermined trust in the screen.
+    The initial implementation used <code>WRKMSG JOB(...)</code>. The problem is that <code>WRKMSG</code> expects a message queue object — for example, <code>WRKMSG MSGQ(QGPL/QSYSOPR)</code>. It does not support a <code>JOB()</code> parameter. To display the inquiry messages for a job, the correct command is <code>WRKJOB JOB(...) OPTION(*MSG)</code>. I reported the issue, and IBM Bob identified the incorrect command and replaced it with the appropriate one. It was a small change, but an important one. If an operator selected option 5 and immediately received a command failure, it would reduce confidence in the application.
   </p>
 
   <!-- Screenshot: WRKMSG correction -->
@@ -841,9 +710,9 @@ end-pr;</pre>
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
-  <h2 id="final">The Final Working Screen</h2>
+  <h2 id="final">Compilation Summary and Final Working Screen</h2>
 
-  <h3>Compile Results</h3>
+  <h3>Compilation Summary</h3>
 
   <!-- Screenshot: Final compile output -->
   <div class="screenshot-wrap">
@@ -852,10 +721,8 @@ end-pr;</pre>
   </div>
 
   <div class="callout success">
-    <strong>Zero warnings. Zero errors.</strong>
-    Highest severity 00. The 46 informational messages (<code>*RNF7066</code>, <code>*RNF7031</code>) are
-    expected — they flag the message subfile format names managed via <code>QMHSNDPM</code> rather than
-    direct RPG I/O, which is the standard IBM i pattern for interactive program feedback.
+    <span class="callout-label">After the fixes, both source members compiled cleanly.</span>
+    Highest severity: 00 · Errors: 0 · Warnings: 0. The 46 informational messages (<code>RNF7066</code> and <code>RNF7031</code>) were expected. They relate to the message subfile formats managed through <code>QMHSNDPM</code>, which is the standard IBM i approach for providing interactive program feedback. They do not indicate a problem with the application.
   </div>
 
   <h3>Live Screen — IBM i 5250 Terminal</h3>
@@ -867,17 +734,14 @@ end-pr;</pre>
   </div>
 
   <p>
-    An L1 analyst opens this screen. They see only the jobs that need attention. Type <code>5</code> to view
-    the waiting message, <code>2</code> to work with the job directly, <code>3</code> to hold it. No IBM i
-    commands to know. The counter is green when jobs need attention and yellow when everything is clear.
+    An L1 analyst opens the screen and immediately sees only the jobs that require attention. They can type <code>5</code> to view the waiting message, <code>2</code> to work with the job, or <code>3</code> to hold it. There are no IBM i commands to remember or navigate. The job counter is displayed in green when MSGW jobs require attention and yellow when the queue is clear.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="productivity">Productivity Comparison</h2>
 
   <p>
-    Here is an honest time comparison — manual development vs. using
-    <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for i (PPI)</strong>:
+    The table below compares the time I would typically expect to spend developing this application manually with the time it took using <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for IBM i (PPI)</strong>.
   </p>
 
   <div class="table-wrap">
@@ -900,39 +764,14 @@ end-pr;</pre>
   </div>
 
   <p>
-    The <code>varchar</code>/<code>char</code> QCMDEXC issue deserves a specific call-out. The symptom gives
-    you almost no information about where to look. An experienced IBM i developer can spend an hour going through
-    ILE documentation carefully enough to find a prototype declaration issue. Bob diagnosed it from the
-    symptom description alone.
+    One issue deserves a special mention. The <code>varchar</code>/<code>char</code> <code>QCMDEXC</code> prototype problem provides very little information about where to start looking. An experienced IBM i developer could easily spend an hour tracing the command string and reviewing the ILE RPG calling conventions before identifying the parameter definition. I reported the symptom, and IBM Bob identified the underlying cause and generated the required fix.
   </p>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
-  <div class="callout info">
-    <strong>What made all of this possible.</strong>
-    Every capability demonstrated here — IBM i Developer Mode, the DDS Display Files Skill, the ILE RPG
-    Free Format Skill, live compilation, SQL service access, and runtime diagnostics — comes from
-    <em style="font-style:normal; font-weight:600;">IBM Bob Premium Package for i (PPI)</em>. For IBM i customers, PPI is the real win: it
-    gives IBM Bob the depth to work correctly on IBM i from day one, turning a single prompt into a
-    production-ready screen in under an hour.
-  </div>
+  <h3>What Made This Possible</h3>
 
-  <!-- ─────────────────────────────────────────────────────────────────── -->
-  <h2 id="demo">Watch It in Action</h2>
-
-  <p>
-    A full walkthrough of the MSGW Job Monitor running live on IBM i, built using
-    <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for i (PPI)</strong>.
-  </p>
-
-  <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:6px; margin:24px 0;">
-    <iframe
-      style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
-      src="https://www.youtube.com/embed/_NFZTdVUaIM?si=kTeZ6TokHNg-WROU"
-      title="YouTube video player"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin"
-      allowfullscreen>
-    </iframe>
+  <div class="callout success">
+    Everything demonstrated in this article — from <strong>IBM i Developer Mode</strong> and the IBM i skills to live compilation, SQL service access, and runtime diagnostics — was made possible by the <strong>IBM Bob Premium Package for IBM i (PPI)</strong>. What stood out to me was how these capabilities worked together. Instead of generating code in isolation, IBM Bob could compile it on a live IBM i system, interpret compiler output, diagnose runtime issues, apply targeted fixes, and help me iterate quickly. That changed the development experience from repeatedly switching between tools to working through the entire implementation in a single conversation.
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
@@ -959,6 +798,27 @@ end-pr;</pre>
     </li>
   </ul>
 
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="demo">The Final Application — IBM i Screens</h2>
+
+  <h3>Watch It in Action</h3>
+
+  <p>
+    A full walkthrough of the MSGW Job Monitor running live on IBM i, built using
+    <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for IBM i (PPI)</strong>.
+  </p>
+
+  <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:4px; margin:22px 0; border:1px solid var(--gray-200); box-shadow:0 2px 8px rgba(0,0,0,.08);">
+    <iframe
+      style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+      src="https://www.youtube.com/embed/_NFZTdVUaIM?si=kTeZ6TokHNg-WROU"
+      title="MSGW Job Monitor — IBM i Developer Mode in IBM Bob Premium Package for IBM i (PPI)"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen>
+    </iframe>
+  </div>
+
 </div><!-- .page-wrap -->
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -972,7 +832,7 @@ end-pr;</pre>
     <span>IBM i Skills</span><span>Db2 for i</span><span>ACTIVE_JOB_INFO</span>
     <span>Operations</span><span>Job Management</span>
   </div>
-  <div class="made-with">Made with IBM Bob · IBM Bob Premium Package for i (PPI) · IBM i Developer Mode</div>
+  <div class="made-with">Made with IBM Bob · IBM Bob Premium Package for IBM i (PPI) · IBM i Developer Mode</div>
 </footer>
 
 </body>
