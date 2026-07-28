@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Building a Complete Order Management System in IBM i with IBM Bob and Premium Package for IBM i</title>
+  <title>Building a Complete Order Management System in IBM i with IBM Bob and Premium Package for i (PPi)</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
 
@@ -288,6 +288,33 @@
       border: 1px solid #393939; border-radius: 2px;
       padding: 3px 10px; margin: 3px; font-size: .75rem; color: #a8a8a8;
     }
+    .site-footer .design-doc-ref {
+      margin-top: 20px; padding: 14px 20px;
+      border: 1px solid #393939; border-radius: 4px;
+      background: #1e1e1e; display: inline-block;
+      max-width: 680px; text-align: left;
+      font-family: var(--font-sans); font-size: .875rem; line-height: 1.6;
+    }
+    .site-footer .design-doc-ref .doc-label {
+      display: block; font-size: .7rem; letter-spacing: .1em;
+      text-transform: uppercase; color: #525252;
+      font-family: var(--font-mono); margin-bottom: 6px;
+    }
+    .site-footer .design-doc-ref p {
+      margin: 0 0 8px; color: #c6c6c6; font-size: .875rem;
+    }
+    .site-footer .design-doc-ref a {
+      color: var(--ibm-blue-60); text-decoration: none;
+      font-family: var(--font-mono); font-size: .8125rem;
+      border-bottom: 1px solid #393939; padding-bottom: 1px;
+    }
+    .site-footer .design-doc-ref a:hover { color: #78a9ff; border-color: #78a9ff; }
+    .site-footer .design-doc-ref .ifs-line {
+      margin: 8px 0 0; font-size: .8125rem; color: #6e6e6e;
+    }
+    .site-footer .design-doc-ref .ifs-line a {
+      font-size: .8125rem;
+    }
     .author-byline {
       display: flex; align-items: center; gap: 10px;
       justify-content: center; margin-top: 18px;
@@ -342,8 +369,8 @@
   <div class="bob-avatar-wrap">
     <img src="../images/Bob.png" alt="IBM Bob" class="bob-avatar-img" />
   </div>
-  <div class="header-badge">IBM Bob · Premium Package for IBM i (PPI) · IBM i Developer Mode</div>
-  <h1>Building a Complete Order Management System in IBM i with IBM Bob and Premium Package for IBM i</h1>
+  <div class="header-badge">IBM Bob · Premium Package for i (PPi) · IBM i Developer Mode</div>
+  <h1>Building a Complete Order Management System in IBM i with IBM Bob and Premium Package for i (PPi)</h1>
   <div class="author-byline">
     <div class="author-avatar">MC</div>
     <span>By Matta Chandrashekar &nbsp;·&nbsp; July 2026</span>
@@ -356,14 +383,14 @@
 <div class="page-wrap">
 
   <div class="tldr">
-    <strong>Quick Summary —</strong> I provided <strong>IBM Bob</strong> with a single design document and one prompt. Using <strong>IBM i Developer Mode</strong> with the <strong>Premium Package for IBM i (PPI)</strong>, it generated a complete Order Management System in IBM i that closely followed the design. The solution included Db2 tables with referential integrity, ILE service programs, DDS display files, interactive maintenance programs, a binding directory, and sample data procedures. The IBM i capabilities available through Premium Package for IBM i (PPI) handled source generation and compilation, allowing every source member to compile successfully. The result was a well-structured, production-ready application. An application that would typically take an experienced IBM i developer two to three weeks to build was completed in a single development session.
+    <strong>Quick Summary —</strong> I provided <strong>IBM Bob</strong> with a single design document and one prompt. Using <strong>IBM i Developer Mode</strong> with the <strong>Premium Package for i (PPi)</strong>, it generated a complete Order Management System in IBM i that closely followed the design. The solution included Db2 tables with referential integrity, ILE service programs, DDS display files, interactive maintenance programs, a binding directory, and sample data procedures. The IBM i capabilities available through Premium Package for i (PPi) handled source generation and compilation, allowing every source member to compile successfully. The result was a well-structured, production-ready application. An application that would typically take an experienced IBM i developer two to three weeks to build was completed in a single development session.
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="usecase">Building an Order Management System from a Design Document</h2>
 
   <p>
-    I wanted to find out how far <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for IBM i (PPI)</strong>, could go when given a complete application design. Instead of asking it to generate a single program or service procedure, I challenged it to build an entire Order Management System in IBM i from a detailed design document using just one prompt.
+    I wanted to find out how far <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for i (PPi)</strong>, could go when given a complete application design. Instead of asking it to generate a single program or service procedure, I challenged it to build an entire Order Management System in IBM i from a detailed design document using just one prompt.
   </p>
 
   <p>
@@ -371,7 +398,7 @@
   </p>
 
   <p>
-    The objective was straightforward: determine whether IBM Bob, using <strong>IBM i Developer Mode</strong> and the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, could transform that design into a complete, well-structured application. I wanted to see whether it could generate the correct architecture, organize the project, respect build dependencies, and produce source members that were ready to compile with minimal manual effort.
+    The objective was straightforward: determine whether IBM Bob, using <strong>IBM i Developer Mode</strong> and the IBM i capabilities provided by the <strong>Premium Package for i (PPi)</strong>, could transform that design into a complete, well-structured application. I wanted to see whether it could generate the correct architecture, organize the project, respect build dependencies, and produce source members that were ready to compile with minimal manual effort.
   </p>
 
   <div class="screenshot-wrap">
@@ -380,14 +407,14 @@
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
-  <h2 id="ppi">IBM Bob Premium Package for IBM i — What Makes This Possible</h2>
+  <h2 id="ppi">IBM Bob Premium Package for i — What Makes This Possible</h2>
 
   <p>
-    Before getting into the build, it's worth explaining what made this possible. The capabilities demonstrated throughout this blog are powered by the <strong>Premium Package for IBM i (PPI)</strong>, which extends IBM i Developer Mode with IBM i-specific capabilities, workflows, skills, and tools.
+    Before getting into the build, it's worth explaining what made this possible. The capabilities demonstrated throughout this blog are powered by the <strong>Premium Package for i (PPi)</strong>, which extends IBM i Developer Mode with IBM i-specific capabilities, workflows, skills, and tools.
   </p>
 
   <p>
-    <strong>Premium Package for IBM i (PPI)</strong> is the add-on that gives IBM Bob deep IBM i capabilities. It includes <strong>IBM i Developer Mode</strong>, IBM i Database Mode, IBM i-specific workflows, IBM i Skills, and direct access to your IBM i system through Code for IBM i. Together, these capabilities enable IBM Bob to work directly with IBM i resources while following IBM i development practices.
+    <strong>Premium Package for i (PPi)</strong> is the add-on that gives IBM Bob deep IBM i capabilities. It includes <strong>IBM i Developer Mode</strong>, IBM i Database Mode, IBM i-specific workflows, IBM i Skills, and direct access to your IBM i system through Code for IBM i. Together, these capabilities enable IBM Bob to work directly with IBM i resources while following IBM i development practices.
   </p>
 
   <p>With <strong>IBM i Developer Mode</strong> enabled, IBM Bob can:</p>
@@ -408,7 +435,7 @@
   <h2 id="prompt">The Prompt — Just One Line</h2>
 
   <p>
-    With the design document already available on the IFS at <code>/home/bob4ipgmr/Order Management.md</code>, everything IBM Bob needed was in one place. The document defined the complete three-tier application architecture, including the Db2 table definitions, procedure interfaces, DDS display file record formats, binding directory structure, and the required compilation sequence.
+    With the design document already available on the IFS at <a href="design-doc/Order Management.md" target="_blank" rel="noopener"><code>/home/bob4ipgmr/Order Management.md</code></a>, everything IBM Bob needed was in one place. The document defined the complete three-tier application architecture, including the Db2 table definitions, procedure interfaces, DDS display file record formats, binding directory structure, and the required compilation sequence. You can read the full specification here: <a href="design-doc/Order Management.md" target="_blank" rel="noopener"><strong>IBM i Order Management System — Application Design Document →</strong></a>
   </p>
 
   <p>I gave IBM Bob a single prompt:</p>
@@ -426,7 +453,7 @@
   <h2 id="plan">IBM Bob's Plan — Understanding the Design Before Writing Code</h2>
 
   <p>
-    Before generating any source, IBM Bob used the IFS access capabilities available through the <strong>Premium Package for IBM i (PPI)</strong> to read the design document. Rather than immediately creating source members, it first analyzed the application and presented a structured implementation plan.
+    Before generating any source, IBM Bob used the IFS access capabilities available through the <strong>Premium Package for i (PPi)</strong> to read the design document. Rather than immediately creating source members, it first analyzed the application and presented a structured implementation plan.
   </p>
 
   <p>Here is the response IBM Bob generated before writing a single line of source:</p>
@@ -458,7 +485,7 @@
   <h2 id="skills">IBM i Skills — What IBM Bob Used and Why</h2>
 
   <p>
-    One of the strengths of the <strong>Premium Package for IBM i (PPI)</strong> is its collection of <strong>IBM i Skills</strong>. These are IBM i-specific knowledge modules that IBM Bob automatically selects based on the task it is performing. Rather than relying on generic code generation, IBM Bob applies the most appropriate IBM i Skill for each stage of the application.
+    One of the strengths of the <strong>Premium Package for i (PPi)</strong> is its collection of <strong>IBM i Skills</strong>. These are IBM i-specific knowledge modules that IBM Bob automatically selects based on the task it is performing. Rather than relying on generic code generation, IBM Bob applies the most appropriate IBM i Skill for each stage of the application.
   </p>
 
   <p>For this application, IBM Bob used the following IBM i Skills:</p>
@@ -528,7 +555,7 @@
   </div>
 
   <p>
-    Once the DDL was generated, IBM Bob compiled each source member using <code>RUNSQLSTM COMMIT(*NONE) NAMING(*SYS) MARGINS(200)</code>. Using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, it verified the compilation results before proceeding to the next stage of the application build.
+    Once the DDL was generated, IBM Bob compiled each source member using <code>RUNSQLSTM COMMIT(*NONE) NAMING(*SYS) MARGINS(200)</code>. Using the IBM i capabilities provided by the <strong>Premium Package for i (PPi)</strong>, it verified the compilation results before proceeding to the next stage of the application build.
   </p>
 
   <div class="callout success">
@@ -672,7 +699,7 @@ ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/INVOICE  *SRVPGM))</pre>
   <h2 id="dds">Step 5 — Building the DDS Display Files</h2>
 
   <p>
-    Next, IBM Bob generated all DDS display files in <code>ORDERMGMT/QDDSSRC</code> using the <strong>DDS Display Files Skill</strong>, one of the IBM i Skills available through the <strong>Premium Package for IBM i (PPI)</strong>. Each display file was compiled using <code>CRTDSPF</code>.
+    Next, IBM Bob generated all DDS display files in <code>ORDERMGMT/QDDSSRC</code> using the <strong>DDS Display Files Skill</strong>, one of the IBM i Skills available through the <strong>Premium Package for i (PPi)</strong>. Each display file was compiled using <code>CRTDSPF</code>.
   </p>
 
   <h3>MAINMENU — <code>QDDSSRC/MAINMENU</code></h3>
@@ -712,7 +739,7 @@ ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/INVOICE  *SRVPGM))</pre>
   <h2 id="uiprograms">Step 6 — Building the IBM i Maintenance Programs</h2>
 
   <p>
-    This was the most challenging part of the application build. IBM Bob generated all the maintenance programs in <code>ORDERMGMT/QRPGLESRC</code>, and this is where the collaboration between me and IBM Bob became particularly interesting. Not every program compiled successfully on the first attempt. What stood out was how IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, analyzed each compilation failure, identified the root cause, and applied the required fix without introducing unrelated changes.
+    This was the most challenging part of the application build. IBM Bob generated all the maintenance programs in <code>ORDERMGMT/QRPGLESRC</code>, and this is where the collaboration between me and IBM Bob became particularly interesting. Not every program compiled successfully on the first attempt. What stood out was how IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for i (PPi)</strong>, analyzed each compilation failure, identified the root cause, and applied the required fix without introducing unrelated changes.
   </p>
 
   <h3>MAINMENU — <code>QRPGLESRC/MAINMENU</code></h3>
@@ -743,7 +770,7 @@ ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/INVOICE  *SRVPGM))</pre>
   <h2 id="bugs">Resolving Compilation Issues</h2>
 
   <p>
-    No IBM i application of this size compiles perfectly on the first attempt, and I wasn't expecting this one to either. What mattered was how IBM Bob responded when compilation errors occurred. Instead of regenerating entire programs, IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, analyzed the compiler output, identified the root cause of each failure, and applied only the changes required to resolve it. That approach preserved the existing source while making each fix precise and easy to review.
+    No IBM i application of this size compiles perfectly on the first attempt, and I wasn't expecting this one to either. What mattered was how IBM Bob responded when compilation errors occurred. Instead of regenerating entire programs, IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for i (PPi)</strong>, analyzed the compiler output, identified the root cause of each failure, and applied only the changes required to resolve it. That approach preserved the existing source while making each fix precise and easy to review.
   </p>
 
   <p>The following sections walk through each of the six compilation issues encountered during the build.</p>
@@ -800,7 +827,7 @@ ADDBNDDIRE BNDDIR(ORDERMGMT/ORDERMGMT) OBJ((ORDERMGMT/INVOICE  *SRVPGM))</pre>
 
   <div class="callout warn">
     <span class="callout-label">Why this matters:</span>
-    This is one of those IBM i details that is rarely documented clearly. The 92-character record length for binder source is a platform convention, not something you would find easily in general RPG documentation. IBM i Developer Mode, through the IBM i capabilities available in the <strong>Premium Package for IBM i (PPI)</strong>, identified this constraint from the compiler output and applied the correct fix.
+    This is one of those IBM i details that is rarely documented clearly. The 92-character record length for binder source is a platform convention, not something you would find easily in general RPG documentation. IBM i Developer Mode, through the IBM i capabilities available in the <strong>Premium Package for i (PPi)</strong>, identified this constraint from the compiler output and applied the correct fix.
   </div>
 
   <!-- ── Bug 3 ── -->
@@ -952,13 +979,13 @@ end-proc;</pre>
 
   <div class="callout success">
     <span class="callout-label">All six issues resolved.</span>
-    Throughout the build, IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>, analyzed the compiler output after each build, identified the root cause of every failure, applied only the necessary changes, and recompiled the affected source. In every case, the fixes were limited to the relevant lines of code — the programs were never regenerated from scratch.
+    Throughout the build, IBM i Developer Mode, using the IBM i capabilities provided by the <strong>Premium Package for i (PPi)</strong>, analyzed the compiler output after each build, identified the root cause of every failure, applied only the necessary changes, and recompiled the affected source. In every case, the fixes were limited to the relevant lines of code — the programs were never regenerated from scratch.
   </div>
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="results">Final Compilation Results — 32 Objects, All at Severity 00</h2>
 
   <p>
-    After resolving all six issues, IBM Bob performed a final build of the entire application using <strong>IBM i Developer Mode</strong> with the IBM i capabilities provided by the <strong>Premium Package for IBM i (PPI)</strong>. The build completed successfully, with all 32 objects compiling at severity 00.
+    After resolving all six issues, IBM Bob performed a final build of the entire application using <strong>IBM i Developer Mode</strong> with the IBM i capabilities provided by the <strong>Premium Package for i (PPi)</strong>. The build completed successfully, with all 32 objects compiling at severity 00.
   </p>
 
   <div class="table-wrap">
@@ -1014,7 +1041,7 @@ end-proc;</pre>
   <h2 id="productivity">Productivity Comparison</h2>
 
   <p>
-    Based on my experience building this application, here is my estimate of the time required to develop it manually compared with using <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for IBM i (PPI)</strong>:
+    Based on my experience building this application, here is my estimate of the time required to develop it manually compared with using <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for i (PPi)</strong>:
   </p>
 
   <div class="table-wrap">
@@ -1074,7 +1101,7 @@ end-proc;</pre>
   <h3>What Made This Possible</h3>
 
   <div class="callout success">
-    Every IBM i capability used to build this application was provided by the <strong>Premium Package for IBM i (PPI)</strong>. That includes reading the design document from the IFS, creating IBM i source members, compiling objects, analyzing compiler output, diagnosing build failures, and applying targeted fixes directly on the IBM i system. The IBM i Skills — including the SQL / Db2 for i Skill, ILE RPG Free Format Skill, DDS Display Files Skill, and ILE Service Programs Skill — provided the IBM i-specific knowledge needed to generate the application's architecture and resolve platform-specific issues throughout the build. Without the <strong>Premium Package for IBM i (PPI)</strong>, this would primarily be a code generation exercise. With <strong>IBM i Developer Mode</strong> and the <strong>Premium Package for IBM i (PPI)</strong>, IBM Bob becomes a development partner, capable of building, compiling, validating, and refining an application directly on your IBM i system.
+    Every IBM i capability used to build this application was provided by the <strong>Premium Package for i (PPi)</strong>. That includes reading the design document from the IFS, creating IBM i source members, compiling objects, analyzing compiler output, diagnosing build failures, and applying targeted fixes directly on the IBM i system. The IBM i Skills — including the SQL / Db2 for i Skill, ILE RPG Free Format Skill, DDS Display Files Skill, and ILE Service Programs Skill — provided the IBM i-specific knowledge needed to generate the application's architecture and resolve platform-specific issues throughout the build. Without the <strong>Premium Package for i (PPi)</strong>, this would primarily be a code generation exercise. With <strong>IBM i Developer Mode</strong> and the <strong>Premium Package for i (PPi)</strong>, IBM Bob becomes a development partner, capable of building, compiling, validating, and refining an application directly on your IBM i system.
   </div>
 
   <!-- ─────────────────────────────────────────────────────────────────── -->
@@ -1082,7 +1109,7 @@ end-proc;</pre>
 
   <p>
     A full walkthrough of the Order Management System in IBM i running live, built using
-    <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for IBM i (PPI)</strong>.
+    <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for i (PPi)</strong>.
   </p>
 
   <div class="video-wrap">
@@ -1097,7 +1124,7 @@ end-proc;</pre>
   <h2 id="nextsteps">Next Steps</h2>
 
   <p>
-    If you want to try <strong>IBM Bob</strong> and <strong>IBM Bob Premium Package for IBM i (PPI)</strong>
+    If you want to try <strong>IBM Bob</strong> and <strong>IBM Bob Premium Package for i (PPi)</strong>
     yourself, here are the resources to get started:
   </p>
 
@@ -1111,7 +1138,7 @@ end-proc;</pre>
       <a href="https://bob.ibm.com/trial" target="_blank" rel="noopener">bob.ibm.com/trial</a>
     </li>
     <li>
-      <strong>IBM Bob Premium Package for i (PPI)</strong> —
+      <strong>IBM Bob Premium Package for i (PPi)</strong> —
       <a href="https://bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index" target="_blank" rel="noopener">bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index</a>
     </li>
     <li>
@@ -1137,13 +1164,12 @@ end-proc;</pre>
     <span>Binding Directory</span>
     <span>IBM Bob</span>
     <span>Developer Mode</span>
-    <span>Premium Package for i</span>
-    <span>PPI</span>
+    <span>Premium Package for i (PPi)</span>
     <span>IBM i Skills</span>
     <span>AI-Assisted</span>
     <span>Order Management</span>
   </div>
-  <div class="made-with">Made with IBM Bob · IBM Bob Premium Package for IBM i (PPI) · IBM i Developer Mode</div>
+  <div class="made-with">Made with IBM Bob · IBM Bob Premium Package for i (PPi) · IBM i Developer Mode</div>
 </footer>
 
 </body>
