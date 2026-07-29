@@ -1,8 +1,5 @@
 # IBM i Order Management System — Application Design
 
-> **Status:** Living document — updated alongside the codebase.
-
----
 
 ## Table of Contents
 
