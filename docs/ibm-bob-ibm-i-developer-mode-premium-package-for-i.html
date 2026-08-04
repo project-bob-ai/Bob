@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IBM Bob — Premium Package for i</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ── TOKENS ── */
+  :root {
+    --ibm-blue:        #0F62FE;
+    --ibm-blue-dark:   #0043CE;
+    --ibm-blue-light:  #E5F6FF;
+    --ibm-blue-hover:  #D0E2FF;
+    --text-primary:    #161616;
+    --text-secondary:  #525252;
+    --text-muted:      #6F6F6F;
+    --bg:              #FFFFFF;
+    --bg-subtle:       #F4F4F4;
+    --border:          #E0E0E0;
+    --tag-bg:          #E0E0E0;
+    --tag-text:        #393939;
+  }
+
+  @page { size: A4 portrait; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "IBM Plex Sans", Arial, sans-serif;
+    font-size: 8.2pt;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--bg);
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 10mm 12mm 8mm 12mm;
+  }
+
+  a { color: var(--ibm-blue); text-decoration: none; }
+  a:hover { color: var(--ibm-blue-dark); text-decoration: underline; }
+
+  strong { font-weight: 600; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--ibm-blue-dark);
+    color: #fff;
+    border-radius: 0;
+    padding: 12px 16px 10px 16px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--ibm-blue);
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .header-main { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+  .header-logo { width: 88px; height: 88px; object-fit: contain; flex-shrink: 0; }
+  .header h1 { font-size: 15pt; font-weight: 700; letter-spacing: -0.2px; line-height: 1.15; color: #fff; }
+  .header .sub { font-size: 8pt; color: #A6C8FF; margin-top: 4px; font-weight: 400; }
+  .header-badge {
+    background: var(--ibm-blue);
+    color: #fff;
+    font-size: 6.5pt;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 0;
+    white-space: nowrap;
+    margin-top: 2px;
+    letter-spacing: 0.4px;
+    text-transform: none;
+  }
+  .header-pills { margin-top: 7px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .hpill {
+    background: transparent;
+    color: #A6C8FF;
+    padding: 2px 8px;
+    font-size: 7pt;
+    font-weight: 400;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 0;
+  }
+
+  /* ── SECTION LABEL ── */
+  .sl {
+    font-size: 6.5pt;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    color: var(--ibm-blue);
+    margin: 10px 0 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sl::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── GRIDS ── */
+  .g2  { display: grid; grid-template-columns: 1fr 1fr;         gap: 6px; margin-bottom: 6px; }
+  .g3  { display: grid; grid-template-columns: 1fr 1fr 1fr;     gap: 6px; margin-bottom: 6px; }
+  .g4  { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .g13 { display: grid; grid-template-columns: 1.1fr 2.9fr;     gap: 6px; margin-bottom: 6px; }
+
+  /* ── CARD ── */
+  .card { border: 1px solid var(--border); border-radius: 0; overflow: hidden; background: var(--bg); }
+  .ch {
+    color: #fff;
+    font-size: 6.8pt;
+    font-weight: 600;
+    padding: 4px 8px;
+    letter-spacing: 0.2px;
+  }
+  /* Carbon-aligned header accent colours */
+  .ch-ibm    { background: var(--ibm-blue-dark); }
+  .ch-dark   { background: #262626; }
+  .ch-slate  { background: #393939; }
+  .ch-purple { background: #6929C4; }
+  .ch-teal   { background: #005D5D; }
+  .ch-green  { background: #198038; }
+  .ch-rose   { background: #750E21; }
+  .ch-orange { background: #8A3800; }
+  .ch-indigo { background: #001D6C; }
+  .cb { padding: 6px 7px; }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-block;
+    padding: 1px 7px;
+    font-size: 6pt;
+    font-weight: 500;
+    margin: 1px 1px 1px 0;
+    border-radius: 0;
+    border: 1px solid transparent;
+  }
+  .t-ibm    { background: var(--ibm-blue-hover); color: var(--ibm-blue-dark); border-color: #A6C8FF; }
+  .t-green  { background: #DEFBE6; color: #0E6027; border-color: #A7F0BA; }
+  .t-purple { background: #F6F2FF; color: #491D8B; border-color: #D4BBFF; }
+  .t-orange { background: #FFF2E8; color: #5C2700; border-color: #FFD5BB; }
+  .t-teal   { background: #D9FBFB; color: #004144; border-color: #9EF0F0; }
+  .t-slate  { background: var(--bg-subtle); color: #393939; border-color: var(--border); }
+  .t-rose   { background: #FFF1F1; color: #520408; border-color: #FFB3B8; }
+
+  /* ── LISTS ── */
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 2px 0 2px 11px; position: relative; font-size: 7.5pt; color: var(--text-primary); }
+  ul li::before { content: "–"; position: absolute; left: 0; color: var(--ibm-blue); font-size: 8pt; font-weight: 600; line-height: 1.4; }
+
+  /* ── SKILL ROW ── */
+  .skill-row { display: flex; align-items: flex-start; gap: 6px; padding: 2.5px 0; border-bottom: 1px solid var(--border); }
+  .skill-row:last-child { border-bottom: none; }
+  .sname {
+    font-family: "IBM Plex Mono", "Courier New", monospace;
+    font-size: 6.2pt;
+    color: var(--ibm-blue);
+    font-weight: 600;
+    flex-shrink: 0;
+    width: 130px;
+    padding-top: 1px;
+  }
+  .sdesc { font-size: 7pt; color: var(--text-secondary); flex: 1; line-height: 1.45; }
+
+  /* ── TOOL TABLE ── */
+  table { width: 100%; border-collapse: collapse; font-size: 7pt; }
+  th {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    padding: 3px 6px;
+    font-weight: 600;
+    text-align: left;
+    font-size: 6.5pt;
+    color: var(--text-primary);
+    letter-spacing: 0.4px;
+  }
+  td { border: 1px solid var(--border); padding: 2.5px 6px; vertical-align: top; color: var(--text-primary); }
+  tr:nth-child(even) td { background: var(--bg-subtle); }
+
+  /* ── WORKFLOW CARD ── */
+  .wf-title { font-weight: 600; font-size: 7.5pt; color: var(--text-primary); margin-bottom: 3px; }
+  .wf-sub   { font-size: 7pt; color: var(--text-muted); margin-bottom: 3px; }
+  .wf-caps li { font-size: 7pt; color: var(--text-secondary); }
+  .wf-caps li::before { content: "–"; color: var(--ibm-blue); }
+
+  /* ── INFO BOX ── */
+  .ib {
+    border-radius: 0;
+    padding: 4px 7px;
+    font-size: 7pt;
+    margin: 2px 0;
+    border-left: 3px solid transparent;
+    line-height: 1.45;
+  }
+  .ib-blue   { background: var(--ibm-blue-light); border-color: var(--ibm-blue); color: var(--text-primary); }
+  .ib-green  { background: #DEFBE6; border-color: #198038; }
+  .ib-purple { background: #F6F2FF; border-color: #6929C4; }
+  .ib-orange { background: #FFF2E8; border-color: #8A3800; }
+  .ib-teal   { background: #D9FBFB; border-color: #005D5D; }
+  .ib-slate  { background: var(--bg-subtle); border-color: #393939; }
+
+  /* ── CATEGORY STRIP ── */
+  .cat-strip { display: flex; gap: 4px; margin-bottom: 4px; flex-wrap: wrap; }
+  .cat {
+    border-radius: 0;
+    padding: 2px 8px;
+    font-size: 6.5pt;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .cat-b { background: var(--ibm-blue-dark); color: #fff; }
+  .cat-p { background: #6929C4; color: #fff; }
+  .cat-t { background: #005D5D; color: #fff; }
+  .cat-s { background: #393939; color: #fff; }
+  .cat-g { background: #198038; color: #fff; }
+
+  code {
+    font-family: "IBM Plex Mono", "Courier New", monospace;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border);
+    padding: 1px 4px;
+    border-radius: 0;
+    font-size: 6.3pt;
+    color: var(--ibm-blue-dark);
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 6.8pt;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+
+
+<div class="header">
+  <div class="header-top">
+    <div class="header-main">
+      <img src="images/Bob.png" alt="IBM Bob logo" class="header-logo" />
+      <div>
+        <h1>IBM Bob — Premium Package for i</h1>
+        <div class="sub">Extend IBM Bob's AI capabilities to IBM i application development environments</div>
+        <div class="header-pills">
+          <span class="hpill">Generate &amp; Explain Code</span>
+          <span class="hpill">Modernize Legacy RPG</span>
+          <span class="hpill">Extract Business Rules</span>
+          <span class="hpill">Official IBM i Docs via RAG</span>
+          <span class="hpill">RPGUnit Test Suites</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-badge">IBM i Developer Mode</div>
+  </div>
+</div>
+
+
+
+<div class="sl">IBM i DEVELOPER MODE</div>
+<div class="g13">
+
+  <div class="card">
+    <div class="ch ch-ibm">CORE CAPABILITIES</div>
+    <div class="cb">
+      <ul>
+        <li>Explain, generate, compile, test &amp; document IBM i code</li>
+        <li>Understands QSYS and IFS file systems</li>
+        <li>Iterative workflow: code → compile → test → document</li>
+        <li>Always loads the relevant skill before answering</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch ch-slate">WHAT IBM i DEVELOPER MODE UNLOCKS</div>
+    <div class="cb">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+        <div>
+          <div class="ib ib-blue" style="margin-bottom:4px"><strong>Workspaces</strong><br />Local PC · QSYS library list · IFS home directory</div>
+          <div class="ib ib-purple"><strong>Skills</strong><br />Auto-activated domain knowledge — RPG, CL, DDS, Db2, RPGUnit</div>
+        </div>
+        <div>
+          <div class="ib ib-teal" style="margin-bottom:4px"><strong>IBM i Specific Tools</strong><br />Read/write members &amp; stream files · Run CL, SQL &amp; PASE commands</div>
+          <div class="ib ib-green"><strong>Workflows</strong><br />Structured multi-step pipelines for modernization, testing &amp; analysis</div>
+        </div>
+      </div>
+      <div class="ib ib-orange" style="margin-top:4px"><strong>RAG Documentation</strong> — Semantic search over official IBM i documentation to ground every response in accurate, up-to-date content.</div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<div class="sl">IBM i SPECIFIC TOOLS</div>
+<div class="g2">
+
+  <div class="card">
+    <div class="ch ch-teal">READ &amp; WRITE TOOLS</div>
+    <div class="cb">
+      <table>
+        <tr><th>Tool</th><th>Purpose</th></tr>
+        <tr><td><code>read_member</code></td><td>Read source members in QSYS</td></tr>
+        <tr><td><code>search_qsys</code></td><td>Find libraries, objects, members; regex content search</td></tr>
+        <tr><td><code>read_stream_file</code></td><td>Read stream files in IFS</td></tr>
+        <tr><td><code>search_ifs</code></td><td>Find files &amp; directories in IFS; regex content search</td></tr>
+        <tr><td><code>write_member</code></td><td>Create or overwrite source members in QSYS</td></tr>
+        <tr><td><code>write_stream_file</code></td><td>Create or overwrite stream files in IFS</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch ch-orange">EXECUTE · BUILD · TEST · DOCUMENTATION TOOLS</div>
+    <div class="cb">
+      <table>
+        <tr><th>Tool</th><th>Purpose</th></tr>
+        <tr><td><code>execute_cl_command</code></td><td>Run library-qualified CL commands on IBM i</td></tr>
+        <tr><td><code>execute_sql_statement</code></td><td>Run SQL statements (destructive types require approval)</td></tr>
+        <tr><td><code>execute_pase_command</code></td><td>Run PASE shell commands</td></tr>
+        <tr><td><code>convert_rpg_source</code></td><td>CVTRPGSRC — convert RPG III/400 source to RPG IV</td></tr>
+        <tr><td><code>get_compile_actions</code></td><td>Retrieve pre-defined Code for IBM i compile actions</td></tr>
+        <tr><td><code>execute_compile_action</code></td><td>Execute a compile action on a given file</td></tr>
+        <tr><td><code>generate_rpg_unit_test_stub</code></td><td>Generate RPGUnit test stubs from RPGLE exports</td></tr>
+        <tr><td><code>run_rpg_unit_test_suite</code></td><td>Compile &amp; run RPGUnit suites with code coverage</td></tr>
+        <tr><td><code>search_ibm_i_docs_with_rag</code></td><td>Semantic RAG search over IBM i documentation</td></tr>
+        <tr><td><code>fetch_cl_command_doc</code></td><td>Fetch CL command docs — params, examples, errors</td></tr>
+        <tr><td><code>search_sql_examples</code> / <code>fetch_sql_example</code></td><td>Find &amp; retrieve Db2 for i SQL service examples</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+
+<div class="sl">RPG SKILLS</div>
+<div class="g2">
+
+  <div class="card">
+    <div class="ch ch-ibm">RPG FOUNDATION &amp; LANGUAGE SKILLS</div>
+    <div class="cb">
+      <div class="skill-row">
+        <span class="sname">rpg-primer-basics</span>
+        <span class="sdesc">Entry point for all RPG skills. Fundamentals across RPG II, III, RPG/400, RPGLE &amp; ILE RPG. <strong>Routes to sub-skills.</strong></span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-free-format-fundamentals</span>
+        <span class="sdesc">Modern free-format RPGLE syntax, patterns, and best practices.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-opm-understanding</span>
+        <span class="sdesc">OPM RPG architecture, program model differences, migration considerations.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-ile-understanding</span>
+        <span class="sdesc">ILE concepts: binding, activation groups, service programs, procedure calls.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpgle-specs</span>
+        <span class="sdesc">Column-by-column reference for all RPGLE fixed-form spec types: H, F, D, I, C, O.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-legacy-specs</span>
+        <span class="sdesc">Legacy RPG (II, III, RPG36, RPG38) fixed-form specification types and column positioning.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-data-structures</span>
+        <span class="sdesc">Data structure types: templates, externally described DS, program status DS, file info DS.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-procedures-functions</span>
+        <span class="sdesc">Subprocedures, prototypes, parameter passing, exports, and service programs.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-file-operations</span>
+        <span class="sdesc">Record-level access op-codes, file declarations, error handling, RLA best practices.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-indicators</span>
+        <span class="sdesc">RPG indicator types and replacement patterns using boolean variables.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-embedded-sql</span>
+        <span class="sdesc">Embedded SQL: cursor operations, host variables, compilation differences.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-cycle-explained</span>
+        <span class="sdesc">RPG program cycle, control breaks, and when to avoid the cycle in modern code.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-debugging-techniques</span>
+        <span class="sdesc">RPG debugging using STRDBG, breakpoints, watch expressions, service entry points.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-code-review</span>
+        <span class="sdesc">Code quality analysis: technical debt, performance issues, modernization opportunities.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch ch-purple">RPG CONVERSION &amp; MODERNIZATION SKILLS</div>
+    <div class="cb">
+      <div class="skill-row">
+        <span class="sname">rpg-fixed-to-free</span>
+        <span class="sdesc">Convert fixed-form RPGLE to fully free-form syntax including I-spec &amp; O-spec modernization.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-pgmdb-conversion</span>
+        <span class="sdesc">Modernize RPG I-specs and O-specs to free-format RPGLE for program-described DB files.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-ospec-conversion</span>
+        <span class="sdesc">Convert program-described printer file O-specs to externally defined printer files.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-opm-to-ile</span>
+        <span class="sdesc">Convert OPM RPG programs to ILE RPGLE — CVTRPGSRC, activation groups, binding.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-refactor-legacy</span>
+        <span class="sdesc">Refactor RPG: replace GOTO, convert subroutines to subprocedures, improve code structure.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-rla-to-sql</span>
+        <span class="sdesc">Convert RLA file operations to embedded SQL for improved performance and flexibility.</span>
+      </div>
+      <div class="skill-row">
+        <span class="sname">rpg-sql-cursor</span>
+        <span class="sdesc">SQL cursor declaration, scrollable cursors, multi-row processing in SQLRPGLE.</span>
+      </div>
+
+      <div style="margin-top:7px">
+        <div class="cat-strip">
+          <span class="cat cat-t">CL SKILLS</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">cl-primer-basics</span>
+          <span class="sdesc">Entry point for CL skills. Command naming conventions, parameter syntax, common commands.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">cl-programming</span>
+          <span class="sdesc">CL programming: variables, conditional logic, error handling, program structure.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">cl-best-practices</span>
+          <span class="sdesc">MONMSG usage, parameter validation, logging strategies, coding standards.</span>
+        </div>
+      </div>
+
+      <div style="margin-top:7px">
+        <div class="cat-strip">
+          <span class="cat cat-s">DDS SKILLS</span>
+          <span class="cat cat-g">RPGUnit TESTING SKILL</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">dds-primer-basics</span>
+          <span class="sdesc">Entry point for DDS. Physical, logical, display, and printer file types.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">dds-physical-files</span>
+          <span class="sdesc">Physical file DDS definitions, field types, key fields, constraints.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">dds-logical-files</span>
+          <span class="sdesc">Logical file definitions, join logical files, select/omit criteria.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">dds-display-files</span>
+          <span class="sdesc">Display file DDS for 5250 screens: record formats, indicators, field attributes.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">dds-printer-files</span>
+          <span class="sdesc">Printer file DDS: print specs, page headings, overflow indicators.</span>
+        </div>
+        <div class="skill-row">
+          <span class="sname">rpgunit-testing</span>
+          <span class="sdesc">RPGUnit: test cases, assertions, setup/teardown, test configuration, test stubs.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<div class="sl">IBM i APPLICATION LIFECYCLE WORKFLOWS</div>
+<div class="g2">
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+
+    <div class="card">
+      <div class="ch ch-rose">RPG MODERNIZATION</div>
+      <div class="cb">
+        <div class="wf-title">Convert OPM and fixed-format ILE RPG to modern free-format RPG</div>
+        <div style="margin-bottom:4px"><span class="tag t-rose">Local</span><span class="tag t-rose">Library list</span></div>
+        <ul class="wf-caps">
+          <li>Auto-detects RPG variant — routes OPM or ILE fixed-format path automatically</li>
+          <li><strong>Phase 1</strong> — Externalizes I-specs and O-specs</li>
+          <li><strong>Phase 2</strong> — Converts H, F, D, and C specifications to free-format</li>
+          <li>Optional pre-conversion compile to validate source before proceeding</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch ch-orange">BUSINESS RULES EXTRACTION</div>
+      <div class="cb">
+        <div class="wf-title">Analyze RPGLE source and extract business rules into a structured Markdown report</div>
+        <div style="margin-bottom:4px"><span class="tag t-orange">Local</span><span class="tag t-orange">Home directory</span><span class="tag t-orange">Library list</span><span class="tag t-orange">Parallel subagents</span></div>
+        <ul class="wf-caps">
+          <li>Identifies external dependencies — DB files, programs, service programs, SQL refs, IBM i APIs</li>
+          <li>Splits source into logical sections and runs parallel subagents for extraction</li>
+          <li>8-section executive Markdown report: validations, calculations, decision logic, process flow</li>
+          <li>Generates up to 3 Mermaid diagrams — process flow, decision logic, state transitions</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:6px">
+
+    <div class="card">
+      <div class="ch ch-purple">RPGUnit TEST PLAN CREATION</div>
+      <div class="cb">
+        <div class="wf-title">Analyze IBM i code and generate structured RPGUnit test plan documents</div>
+        <div style="margin-bottom:4px"><span class="tag t-purple">Local</span><span class="tag t-purple">Library list</span><span class="tag t-purple">Step 1 of 2</span></div>
+        <ul class="wf-caps">
+          <li>Creates module docs, test suite docs, test utilities doc, and reusable templates</li>
+          <li>Runs existing test suites to capture current state before planning</li>
+          <li>Produces the blueprint used by the Test Suite Implementation workflow</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch ch-green">RPGUnit TEST SUITE IMPLEMENTATION</div>
+      <div class="cb">
+        <div class="wf-title">Implement RPGUnit test suites from existing test plan documents</div>
+        <div style="margin-bottom:4px"><span class="tag t-green">Local</span><span class="tag t-green">Library list</span><span class="tag t-green">Step 2 of 2</span></div>
+        <ul class="wf-caps">
+          <li>Writes test suites from test plan; creates or updates <code>testing.json</code></li>
+          <li>Runs test suites and iterates until all newly generated tests pass</li>
+          <li>Delivers a final summary of test files created and test cases implemented</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch ch-teal">SQL INDEX STRATEGY ADVISOR</div>
+      <div class="cb">
+        <div class="wf-title">Analyze Db2 for i SQL performance data and establish an optimized index strategy</div>
+        <div style="margin-bottom:4px"><span class="tag t-teal">IBM i Developer</span><span class="tag t-teal">IBM i Database</span></div>
+        <ul class="wf-caps">
+          <li>Queries SQL Plan Cache and Index Advisor system catalog views</li>
+          <li>Identifies high-cost queries and missing or redundant index candidates</li>
+          <li>Generates prioritized CREATE INDEX statements for user approval before execution</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="footer">IBM Bob &nbsp;·&nbsp; Premium Package for i &nbsp;·&nbsp; IBM i Developer Mode</div>
+
+</body>
+</html>
