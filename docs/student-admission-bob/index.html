@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building a Student Admission Management System on IBM i with IBM Bob, RPGLE, Python Flask and Premium Package for i (PPI)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ibm-blue-60:   #0f62fe;
+      --ibm-blue-70:   #0043ce;
+      --ibm-blue-10:   #edf5ff;
+      --ibm-gray-100:  #161616;
+      --ibm-gray-70:   #525252;
+      --ibm-gray-20:   #e0e0e0;
+      --ibm-gray-10:   #f4f4f4;
+      --ibm-white:     #ffffff;
+      --ibm-green-60:  #198038;
+      --ibm-green-10:  #defbe6;
+      --ibm-red-60:    #da1e28;
+      --ibm-red-10:    #fff1f1;
+      --ibm-yellow-30: #f1c21b;
+      --ibm-yellow-10: #fdf6dd;
+
+      --blue:      var(--ibm-blue-60);
+      --blue-dark: var(--ibm-blue-70);
+      --green:     var(--ibm-green-60);
+      --red:       var(--ibm-red-60);
+      --yellow:    var(--ibm-yellow-30);
+      --gray-200:  var(--ibm-gray-20);
+      --gray-700:  var(--ibm-gray-70);
+      --gray-900:  var(--ibm-gray-100);
+      --white:     var(--ibm-white);
+      --term-bg:   #161616;
+
+      --font-sans: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --max-width: 860px;
+      --radius:    4px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--gray-900);
+      background: var(--white);
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .site-header {
+      background: var(--ibm-blue-60);
+      color: var(--white);
+      padding: 52px 24px 44px;
+      text-align: center;
+      border-bottom: 4px solid var(--ibm-blue-70);
+    }
+
+    .bob-avatar-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+    .bob-avatar-img {
+      width: 100px; height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.4));
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 2px;
+      font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px; margin-bottom: 18px;
+      font-family: var(--font-mono);
+    }
+
+    .site-header h1 {
+      font-size: clamp(1.625rem, 3.8vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      max-width: 780px;
+      margin: 0 auto 16px;
+      letter-spacing: -.015em;
+    }
+
+    .site-header .meta {
+      display: flex; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+      font-size: .875rem; opacity: .75;
+    }
+    .site-header .meta span::before { content: '· '; }
+    .site-header .meta span:first-child::before { content: ''; }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .tldr {
+      background: var(--ibm-blue-10);
+      border-left: 4px solid var(--blue);
+      max-width: var(--max-width);
+      margin: 40px auto 0;
+      padding: 16px 20px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: .9375rem;
+    }
+    .tldr strong { color: var(--blue-dark); font-weight: 600; }
+
+    .page-wrap {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Typography ──────────────────────────────────────────────────────── */
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin: 52px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--ibm-blue-60);
+      letter-spacing: -.01em;
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 32px 0 10px;
+    }
+
+    h4 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 22px 0 8px;
+    }
+
+    p { margin-bottom: 16px; font-size: 1rem; line-height: 1.65; }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--blue-dark); text-decoration: underline; }
+    strong { font-weight: 600; }
+
+    ul, ol { padding-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 6px; line-height: 1.65; }
+
+    /* ── Inline code ─────────────────────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: .875rem;
+      background: var(--ibm-gray-10);
+      color: var(--gray-900);
+      padding: 1px 6px;
+      border-radius: 2px;
+      border: 1px solid var(--gray-200);
+    }
+
+    /* ── Code blocks ─────────────────────────────────────────────────────── */
+    .code-block {
+      margin: 22px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid #393939;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .code-block .code-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      background: #262626; padding: 8px 16px;
+      border-bottom: 1px solid #393939;
+    }
+    .code-block .code-lang {
+      font-family: var(--font-mono); font-size: .75rem;
+      color: #a8a8a8; text-transform: uppercase; letter-spacing: .1em;
+    }
+    .code-block .code-dots { display: flex; gap: 6px; }
+    .code-block .code-dots span { width: 11px; height: 11px; border-radius: 50%; }
+    .code-block .code-dots span:nth-child(1) { background: #ff5f56; }
+    .code-block .code-dots span:nth-child(2) { background: #ffbd2e; }
+    .code-block .code-dots span:nth-child(3) { background: #27c93f; }
+    .code-block pre {
+      background: var(--term-bg); color: #f4f4f4;
+      padding: 20px; overflow-x: auto;
+      font-family: var(--font-mono); font-size: .875rem;
+      line-height: 1.6; margin: 0;
+    }
+
+    /* ── Screenshot placeholder ──────────────────────────────────────────── */
+    .screenshot-wrap {
+      margin: 22px 0; border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .screenshot-wrap img { width: 100%; display: block; }
+    .screenshot-wrap figcaption {
+      background: var(--ibm-gray-10);
+      border-top: 1px solid var(--gray-200);
+      padding: 7px 14px;
+      font-size: .8125rem; color: var(--gray-700);
+      font-family: var(--font-mono);
+    }
+    .screenshot-placeholder {
+      background: #1a1a1a;
+      border: 2px dashed #393939;
+      border-radius: var(--radius);
+      margin: 22px 0;
+      padding: 28px 20px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: .8125rem;
+      color: #6e6e6e;
+    }
+    .screenshot-placeholder span { display: block; color: #a8a8a8; margin-bottom: 4px; }
+
+    /* ── Diff / before-after ─────────────────────────────────────────────── */
+    .diff-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin: 22px 0;
+    }
+    @media (max-width: 640px) { .diff-wrap { grid-template-columns: 1fr; } }
+    .diff-pane { border-radius: var(--radius); overflow: hidden; }
+    .diff-pane .diff-label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px; font-size: .75rem; font-weight: 600;
+      font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em;
+    }
+    .diff-pane.before .diff-label { background: #2d1a1a; color: #ff8389; }
+    .diff-pane.after  .diff-label { background: #0e2316; color: #42be65; }
+    .diff-pane pre {
+      background: var(--term-bg); color: #f4f4f4;
+      padding: 16px; font-family: var(--font-mono);
+      font-size: .875rem; line-height: 1.6; margin: 0; overflow-x: auto;
+    }
+    .diff-pane.before pre .diff-line { color: #ff8389; }
+    .diff-pane.after  pre .diff-line { color: #42be65; }
+
+    /* ── Tables ──────────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+    thead tr { background: var(--ibm-blue-60); color: var(--white); }
+    thead th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: .875rem; }
+    tbody tr { border-bottom: 1px solid var(--gray-200); }
+    tbody tr:nth-child(even) { background: var(--ibm-gray-10); }
+    tbody tr:hover { background: var(--ibm-blue-10); }
+    tbody td { padding: 11px 16px; font-size: .9375rem; vertical-align: top; }
+
+    /* ── Callouts ────────────────────────────────────────────────────────── */
+    .callout {
+      border-radius: var(--radius); padding: 14px 18px;
+      margin: 18px 0; font-size: .9375rem; line-height: 1.55;
+    }
+    .callout.info    { background: var(--ibm-blue-10);   border-left: 4px solid var(--blue); }
+    .callout.warn    { background: var(--ibm-yellow-10); border-left: 4px solid var(--yellow); }
+    .callout.success { background: var(--ibm-green-10);  border-left: 4px solid var(--green); }
+    .callout.error   { background: var(--ibm-red-10);    border-left: 4px solid var(--red); }
+    .callout .callout-label  { display: block; margin-bottom: 4px; font-weight: 600; color: var(--gray-900); }
+    .callout strong  { font-weight: 600; color: var(--gray-900); }
+
+    /* ── Blockquote ──────────────────────────────────────────────────────── */
+    blockquote {
+      border-left: 4px solid var(--blue);
+      margin: 18px 0; padding: 12px 20px;
+      background: var(--ibm-gray-10);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-style: italic; color: var(--gray-700); font-size: .9375rem;
+    }
+    blockquote p { margin: 0; }
+
+    /* ── Video embed ─────────────────────────────────────────────────────── */
+    .video-wrap {
+      margin: 22px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    .site-footer {
+      background: #161616; color: #a8a8a8;
+      text-align: center; padding: 32px 24px;
+      font-size: .875rem; font-family: var(--font-mono);
+      border-top: 4px solid var(--blue);
+    }
+    .site-footer .tags { margin-top: 12px; }
+    .site-footer .tags span {
+      display: inline-block; background: #262626;
+      border: 1px solid #393939; border-radius: 2px;
+      padding: 3px 10px; margin: 3px; font-size: .75rem; color: #a8a8a8;
+    }
+    .author-byline {
+      display: flex; align-items: center; gap: 10px;
+      justify-content: center; margin-top: 18px;
+      font-size: .875rem; opacity: .8;
+    }
+    .author-byline .author-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .made-with {
+      margin-top: 22px; padding-top: 14px;
+      border-top: 1px solid #393939;
+      font-size: .75rem; color: #525252;
+    }
+
+    /* ── Mermaid diagram ─────────────────────────────────────────────────── */
+    .mermaid-wrap {
+      margin: 28px 0;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--ibm-gray-10);
+      padding: 24px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .mermaid-wrap .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+    .mermaid-wrap svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 600px) {
+      .site-header { padding: 36px 16px 28px; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 1.25rem; }
+      .page-wrap { padding: 0 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav" style="background:#0043ce;padding:0 24px;display:flex;align-items:center;">
+  <a href="../index.html" style="display:inline-block;color:rgba(255,255,255,.85);text-decoration:none;font-size:.875rem;font-family:var(--font-mono);padding:12px 18px;border-bottom:2px solid transparent;" onmouseover="this.style.color='#fff';this.style.borderBottomColor='#78a9ff'" onmouseout="this.style.color='rgba(255,255,255,.85)';this.style.borderBottomColor='transparent'">Home</a>
+  <a href="../blogs/index.html" style="display:inline-block;color:rgba(255,255,255,.85);text-decoration:none;font-size:.875rem;font-family:var(--font-mono);padding:12px 18px;border-bottom:2px solid transparent;" onmouseover="this.style.color='#fff';this.style.borderBottomColor='#78a9ff'" onmouseout="this.style.color='rgba(255,255,255,.85)';this.style.borderBottomColor='transparent'">All Blogs</a>
+  <a href="index.html" aria-current="page" style="display:inline-block;color:#fff;text-decoration:none;font-size:.875rem;font-family:var(--font-mono);padding:12px 18px;border-bottom:2px solid #78a9ff;">Student Admission</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="bob-avatar-wrap">
+    <img src="../images/Bob.png" alt="IBM Bob" class="bob-avatar-img" />
+  </div>
+  <div class="header-badge">IBM Bob · Premium Package for i (PPI) · IBM i Developer Mode</div>
+  <h1>Building a Student Admission Management System on IBM i with IBM Bob, RPGLE, Python Flask and Premium Package for i (PPI)</h1>
+  <div class="author-byline">
+    <div class="author-avatar">MC</div>
+    <span>By Matta Chandrashekar &nbsp;·&nbsp; August 2026</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE BODY                                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+  <div class="tldr">
+    <strong>Quick Summary —</strong> I gave <strong>IBM Bob</strong> a single detailed prompt describing a complete Student Admission Management System for IBM i. Using <strong>IBM i Developer Mode</strong>, powered by the <strong>Premium Package for i (PPI)</strong>, IBM Bob planned the application, generated the IBM i backend, handled compilation and database setup, and built the web interface using Python Flask, HTML, CSS, and JavaScript in a single development session. What makes this story interesting is not just what got built, but how IBM Bob worked through the real IBM i platform constraints that came up along the way.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="usecase">The Goal: A Full-Stack Admission System on IBM i</h2>
+
+  <p>
+    The application I had in mind was a Student Admission Management System. I wanted to build it as a complete application on IBM i, with Db2 for i and RPGLE handling the backend, Python Flask providing the REST API, and HTML, CSS, and JavaScript providing the browser interface.
+  </p>
+
+  <p>
+    I also wanted the application to include the kinds of features you would expect in a real admission system, such as adding and updating students, filtering and sorting records, pagination, soft-delete, and CSV export.
+  </p>
+
+  <p>
+    The web layer would connect to Db2 for i using the <code>ibm_db_dbi</code> Python driver. I wanted to see how IBM Bob would put all these pieces together and handle the IBM i-specific issues that came up during development.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="ppi">IBM Bob Premium Package for i: Why This Works</h2>
+
+  <p>
+    Before getting into the development, it is worth explaining what made this application possible. The IBM i capabilities I used throughout the application came from <strong>Premium Package for i (PPI)</strong>.
+  </p>
+
+  <p>
+    With <strong>IBM i Developer Mode</strong> active, IBM Bob could work directly with my IBM i environment through Code for IBM i. It was not just generating code for me to copy and run later. IBM Bob could create source members, execute CL commands, run SQL against Db2 for i, read compiler output, work with IFS files, and check the results directly on the system.
+  </p>
+
+  <p>With <strong>IBM i Developer Mode</strong> active, IBM Bob can:</p>
+
+  <ul>
+    <li>Create and update QSYS source members directly on the IBM i using <code>write_member</code></li>
+    <li>Execute CL commands such as <code>CRTSRCPF</code>, <code>ADDPFM</code>, <code>CRTSQLRPGI</code>, <code>CRTSRVPGM</code>, <code>CRTBNDDIR</code>, <code>CRTJRN</code>, and <code>STRJRNPF</code></li>
+    <li>Run SQL statements against <code>QSYS2</code> SQL Services to verify objects, query table schemas, and check index definitions</li>
+    <li>Execute PASE shell commands to write IFS files, run Python scripts, and verify directory structures</li>
+    <li>Read compiler output and job log messages to diagnose build failures</li>
+    <li>Apply IBM i Skills that encode platform-specific knowledge about module compilation sequences, binder source case sensitivity rules, CCSID constraints, journaling requirements, and Db2 for i SQL syntax</li>
+  </ul>
+
+  <p>
+    Without PPI, this would be a text generation exercise. With PPI, IBM Bob becomes a development partner that actually executes the work, catches the errors, and resolves them using knowledge of IBM i internals.
+  </p>
+
+  <div class="callout info">
+    <span class="callout-label">Also worth noting:</span>
+    IBM Bob also used IBM i Skills that encode platform-specific knowledge about module compilation sequences, binder source case sensitivity rules, CCSID constraints, journaling requirements, and Db2 for i SQL syntax.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="prompt">The Prompt: One Detailed Message</h2>
+
+  <p>
+    I gave IBM Bob a single detailed prompt with the requirements for the entire application. I described the database schema, RPGLE architecture, Python Flask layer, IFS directory structure, and compilation requirements all in one message.
+  </p>
+
+  <p>
+    I also made a few IBM i-specific requirements clear. The <code>SCHADMLIB</code> library already existed on the system, so IBM Bob should not recreate it. All RPGLE and SQLRPGLE source had to be created as QSYS source members inside <code>SCHADMLIB</code>. I also specified that the RPGLE <code>/copy</code> directives should use QSYS member syntax rather than IFS paths. You can read the <a href="prompt.md" target="_blank" rel="noopener">full prompt here</a>.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/The Prompt.png" alt="The full prompt submitted to IBM Bob in IBM i Developer Mode" />
+    <figcaption>The single prompt submitted to IBM Bob in IBM i Developer Mode describing all application requirements</figcaption>
+  </figure>
+
+  <p>
+    I was curious to see what IBM Bob would do with a prompt this long. Would it ask me to break the work into smaller pieces? Would it start with the database and wait for the next instruction? It did neither. IBM Bob first activated five IBM i Skills and then created a structured plan for the application.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="plan">The Build Plan: IBM Bob's 16-Phase Approach</h2>
+
+  <p>
+    Before starting the build, IBM Bob first checked the current state of <code>SCHADMLIB</code> using the <code>QSYS2.OBJECT_STATISTICS</code> SQL Service. It confirmed that the library was empty and then created a structured plan for the application.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/IBM Bob's 16-Phase.png" alt="IBM Bob's 16-phase todo list in IBM i Developer Mode" />
+    <figcaption>The structured 16-phase implementation plan generated before any source was written</figcaption>
+  </figure>
+
+  <p>What I liked about the plan was that IBM Bob put the steps in the right order. There were dependencies between several parts of the application, and those dependencies mattered on IBM i:</p>
+
+  <ul>
+    <li>Source physical files must exist before source members can be written into them</li>
+    <li>The copybook (<code>STUDINC</code>) must exist before any SQLRPGLE module can be compiled, because all four modules reference it via <code>/copy SCHADMLIB/QRPGLEREF,STUDINC</code></li>
+    <li>All four modules must compile successfully before the service program can be created</li>
+    <li>The service program must exist before it can be added to the binding directory</li>
+    <li>Tables must be journaled before any Python DML can execute against them</li>
+  </ul>
+
+  <p>
+    IBM Bob tracked every phase using the <code>update_todo_list</code> tool throughout the session, marking items complete as each phase succeeded and keeping the remaining work visible. It is a small detail, but it meant the entire build state was always clear throughout the session.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="skills">IBM i Skills: What IBM Bob Selected and Why</h2>
+
+  <p>
+    One of the things I wanted to understand during this build was how IBM Bob would use the IBM i Skills provided through Premium Package for i (PPI). IBM i Skills provide IBM i-specific knowledge that IBM Bob can use when working on a particular task. For this application, IBM Bob activated five Skills before generating the backend source:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Skill Activated</th><th>Used For</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>rpg-primer-basics</strong></td>
+          <td>Foundational IBM i RPG conventions — <code>ctl-opt</code> options, date formats, option flags</td>
+        </tr>
+        <tr>
+          <td><strong>rpg-ile-understanding</strong></td>
+          <td>ILE concepts — module/service program architecture, activation groups, binding directories</td>
+        </tr>
+        <tr>
+          <td><strong>rpg-free-format-fundamentals</strong></td>
+          <td>Fully free-format <code>**free</code> syntax, <code>dcl-proc</code>/<code>end-proc</code>, <code>dcl-pi</code>/<code>end-pi</code></td>
+        </tr>
+        <tr>
+          <td><strong>rpg-procedures-functions</strong></td>
+          <td>Exported procedure definitions, return types, <code>likeds</code> parameters, <code>const</code> qualifiers</td>
+        </tr>
+        <tr>
+          <td><strong>rpg-embedded-sql</strong></td>
+          <td>SQLSTATE checking, <code>GET DIAGNOSTICS ROW_COUNT</code>, host variables, <code>EXEC SQL</code> in free-format RPG</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="screenshot-wrap">
+    <img src="images/IBM i Skills.png" alt="IBM Bob activating five IBM i Skills at the start of the session" />
+    <figcaption>Five IBM i Skills activated before the backend source was generated</figcaption>
+  </figure>
+
+  <p>
+    I found the combination interesting. IBM Bob did not just load the RPG Skills. It also activated the embedded SQL Skill because the backend used SQLRPGLE modules. It also needed the ILE and procedure Skills because those modules would eventually become part of a service program. That gave me a good indication that IBM Bob was looking at the application as a whole and selecting the IBM i knowledge it needed before starting the actual code generation.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="setup">Phase 1: QSYS Setup and IFS Directory Structure</h2>
+
+  <p>
+    The first step was setting up the places where the application source would live. IBM Bob created four source physical files in <code>SCHADMLIB</code> using the <code>CRTSRCPF</code> CL command. These source physical files had different roles. <code>QRPGLESRC</code> was for the RPGLE and SQLRPGLE source members, <code>QRPGLEREF</code> was for the copybook, <code>QSRVSRC</code> was for the service program binder source, and <code>QBNDSRC</code> was for the binding directory definition.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Source Physical Files.png" alt="Source physical files created in SCHADMLIB using CRTSRCPF" />
+    <figcaption>Four source physical files created in SCHADMLIB using CRTSRCPF</figcaption>
+  </figure>
+
+  <p>
+    IBM Bob then created the IFS directory structure for the web application using a single PASE shell command:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PASE — mkdir</span>
+      <div class="code-dots"><span></span><span></span><span></span></div>
+    </div>
+    <pre>mkdir -p /STUADMAPP/QSQLSRC \
+          /STUADMAPP/WEBSRC/templates \
+          /STUADMAPP/WEBSRC/static/css \
+          /STUADMAPP/WEBSRC/static/js \
+          /STUADMAPP/LOGS \
+          /STUADMAPP/CONFIG</pre>
+  </div>
+
+  <p>
+    At this point, the application had two separate areas on IBM i. <code>SCHADMLIB</code> in QSYS was being used for the IBM i source and objects, while <code>/STUADMAPP</code> on the IFS was used for the Python, HTML, CSS, JavaScript, and SQL files. I liked this separation because it made the structure of the application clear from the beginning. The IBM i source stayed in QSYS, while the web and open-system files stayed on the IFS.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="database">Phase 2: The Database Layer and a Real DDL Challenge</h2>
+
+  <p>
+    The database design was more than just creating a table. The <code>STUDENTS</code> table needed an identity column for the student ID, validation rules for the pincode and contact number, a status field defaulting to <code>'A'</code>, and timestamps for tracking changes. I also needed a separate audit table to record changes to student records.
+  </p>
+
+  <p>
+    IBM Bob created the DDL script in <code>/STUADMAPP/QSQLSRC/STUADM_DDL.sql</code> and started executing it. This is where the session got interesting — three consecutive DDL execution attempts failed, each for a different IBM i-specific reason, and IBM Bob worked through all three systematically.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/The Database Layer.png" alt="The Database Layer DDL execution in IBM Bob" />
+    <figcaption>IBM Bob executing the DDL script for the STUDENTS and STUD_AUDIT tables in SCHADMLIB</figcaption>
+  </figure>
+
+  <h3>DDL Issue 1 — RCDFMT Conflicts with GENERATED AS IDENTITY</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> First <code>CREATE TABLE</code> attempt included <code>RCDFMT STUDENTSF</code> alongside <code>GENERATED ALWAYS AS IDENTITY</code>. Db2 for i does not allow these together.
+  </div>
+
+  <p>
+    IBM Bob's immediate response was to remove <code>RCDFMT</code> entirely. That is the correct fix — the record format name clause is a legacy DDS-era feature and has no meaningful role in SQL-created tables.
+  </p>
+
+  <h3>DDL Issue 2 — NO ORDER Not Supported in Db2 for i</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> <code>SQL0574</code> — column attribute not valid. The identity column options included <code>NO MAXVALUE NO CYCLE NO ORDER CACHE 20</code>. The <code>NO ORDER</code> keyword is not recognized by Db2 for i.
+  </div>
+
+  <p>
+    IBM Bob simplified the identity options down to the minimum that Db2 for i actually supports: <code>(START WITH 1 INCREMENT BY 1)</code>. Clean, correct, no platform-specific keywords.
+  </p>
+
+  <h3>DDL Issue 3 — CCSID 65535 Blocks DEFAULT USER</h3>
+
+  <div class="callout error">
+    <span class="callout-label">Symptom:</span> <code>SQL0574</code> persisted. The root cause turned out to be the job CCSID. The PASE job running the SQL had <code>CCSID 65535</code> — a hex CCSID that cannot translate SQL special register names like <code>DEFAULT USER</code>.
+  </div>
+
+  <p>
+    This is one of those IBM i issues that is genuinely tricky to diagnose. <code>DEFAULT USER</code> works perfectly in an interactive SQL session or in an RPG embedded SQL statement. But when the job CCSID is 65535, the SQL precompiler cannot resolve the special register name, and you get <code>SQL0574</code> with no obvious clue about what is wrong.
+  </p>
+
+  <div class="callout warn">
+    <span class="callout-label">Why this matters:</span>
+    CCSID 65535 is common in PASE jobs and SSH sessions on IBM i. It is one of the first things you learn to watch for when scripting DDL or SQL from the PASE environment. IBM Bob identified it from the error pattern and applied the right workaround.
+  </div>
+
+  <p>
+    IBM Bob resolved this in two ways. For the DDL, it replaced <code>DEFAULT USER</code> with <code>DEFAULT 'SYSTEM'</code>, which the CCSID 65535 job can handle without issue. For executing the DDL, it switched from the direct <code>execute_sql_statement</code> tool to a Python <code>ibm_db_dbi</code> script using a local connection — <code>ibm_db_dbi.connect()</code> with no arguments creates a connection that runs in a standard CCSID context rather than inheriting the PASE job's CCSID.
+  </p>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — fails on CCSID 65535</div>
+      <pre><span class="diff-line">-  UPDATED_BY VARCHAR(10) NOT NULL</span>
+<span class="diff-line">-             DEFAULT USER,</span></pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — works on any CCSID</div>
+      <pre><span class="diff-line">+  UPDATED_BY VARCHAR(10) NOT NULL</span>
+<span class="diff-line">+             DEFAULT 'SYSTEM',</span></pre>
+    </div>
+  </div>
+
+  <p>
+    The actual user value is set explicitly at DML time in every <code>INSERT</code> and <code>UPDATE</code> statement — <code>UPDATED_BY = ?</code> passed as a parameter from the application layer. The column default of <code>'SYSTEM'</code> is only a safety fallback. This is actually a cleaner design, because it means the audit column is always populated by the application's known user context rather than a database-level special register.
+  </p>
+
+  <div class="callout success">
+    <span class="callout-label">Tables created successfully.</span>
+    <code>SCHADMLIB.STUDENTS</code> (17 columns, identity PK, 3 CHECK constraints) and <code>SCHADMLIB.STUD_AUDIT</code> (6 columns) — both created. Three indexes added: on <code>STATUS</code>, on <code>STANDARD/SECTION</code>, and on <code>STUD_NAME</code>.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="rpgle">Phases 3–8: The RPGLE Backend</h2>
+
+  <h3>The Shared Copybook: STUDINC</h3>
+
+  <p>
+    Before any module could be written, IBM Bob created the shared copybook in <code>SCHADMLIB/QRPGLEREF</code> as member <code>STUDINC</code>. The copybook is the backbone of the entire backend — it defines the <code>StudDS</code> data structure (all 17 table columns mapped to RPG variables), the <code>ResultDS</code> return structure, constants for return codes and audit operation types, and forward prototypes for all eight exported procedures.
+  </p>
+
+  <p>
+    Every module uses <code>/copy SCHADMLIB/QRPGLEREF,STUDINC</code> — the QSYS member syntax that the prompt specifically required. IBM Bob used that syntax consistently throughout all four modules without deviation.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/STUDINC.png" alt="STUDINC copybook member in SCHADMLIB/QRPGLEREF" />
+    <figcaption>The shared copybook containing StudDS, ResultDS, constants, and procedure prototypes</figcaption>
+  </figure>
+
+  <h3>The ResultDS Pattern: Consistent Error Handling</h3>
+
+  <p>
+    Every exported procedure returns a <code>ResultDS</code> data structure. This is a deliberate architectural decision. Instead of checking SQLSTATE in the calling program, the caller simply checks <code>result.ReturnCode</code>. The module handles all the SQL error checking internally and populates the result with a human-readable message and the raw SQLCODE/SQLSTATE for logging. It is a clean pattern that scales — the Python layer, when it calls through to this service program in future, gets a consistent interface regardless of which operation failed.
+  </p>
+
+  <h3>The Four Modules</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Module</th><th>Source Member</th><th>Exported Procedures</th><th>Key Logic</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>STUINSERT</code></td>
+          <td><code>QRPGLESRC/STUINSERT</code></td>
+          <td><code>AddStudent</code>, <code>ValidatePincode</code>, <code>ValidateContact</code>, <code>WriteAudit</code></td>
+          <td>Validates pincode and contact, inserts with <code>IDENTITY_VAL_LOCAL()</code>, writes to STUD_AUDIT on success</td>
+        </tr>
+        <tr>
+          <td><code>STUSELECT</code></td>
+          <td><code>QRPGLESRC/STUSELECT</code></td>
+          <td><code>GetStudent</code>, <code>GetStudents</code></td>
+          <td>Single-row <code>SELECT INTO</code>; multi-row count with token-based filter parsing (<code>NAME:</code>, <code>STD:</code>, <code>SEC:</code>)</td>
+        </tr>
+        <tr>
+          <td><code>STUUPDATE</code></td>
+          <td><code>QRPGLESRC/STUUPDATE</code></td>
+          <td><code>UpdateStudent</code></td>
+          <td>Re-validates all fields, uses <code>GET DIAGNOSTICS ROW_COUNT</code> to detect zero-match updates</td>
+        </tr>
+        <tr>
+          <td><code>STUDELETE</code></td>
+          <td><code>QRPGLESRC/STUDELETE</code></td>
+          <td><code>DeleteStudent</code></td>
+          <td>Two-step: confirms active record exists first, then <code>UPDATE STATUS = 'I'</code> — no physical DELETE ever runs</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The soft-delete pattern in <code>STUDELETE</code> is worth highlighting because IBM Bob implemented it with the right two-step approach. It first does a <code>SELECT STUD_NAME INTO :studName FROM STUDENTS WHERE STUDENT_ID = :pStudentId AND STATUS = 'A'</code>. If that returns <code>SQLCODE = +100</code> (not found or already inactive), it returns <code>RC_NOTFOUND</code> immediately without touching the data. Only if the record is confirmed active does it proceed with the status update. The audit write then captures the student's name in the log before that information is no longer easily retrievable.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/STUDELETE module.png" alt="STUDELETE module — two-step soft delete with pre-validation SELECT" />
+    <figcaption>DeleteStudent procedure confirming active status before issuing the soft-delete UPDATE</figcaption>
+  </figure>
+
+  <h3>The Binder Source: Getting the Symbol Case Right</h3>
+
+  <p>
+    IBM Bob initially wrote the binder source with mixed-case export symbols: <code>EXPORT SYMBOL('AddStudent')</code>. It then used <code>DSPMOD MODULE(SCHADMLIB/STUINSERT)</code> to inspect the actual exported symbol names from the compiled module. What came back was <code>ADDSTUDENT</code>, not <code>AddStudent</code>.
+  </p>
+
+  <div class="callout warn">
+    <span class="callout-label">Why this happens:</span>
+    In free-format RPGLE, when a <code>dcl-proc</code> is declared with <code>export</code> and no explicit <code>extproc</code> qualifier, the compiler exports the symbol in uppercase. This is different from the mixed-case behavior you get with <code>extproc(*dclcase)</code>. The binder source symbols must match the compiled export exactly, including case. Unquoted symbols in binder source are uppercased by the binder. Quoted symbols preserve case. The combination that actually works here is uppercase quoted strings.
+  </div>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — wrong case</div>
+      <pre><span class="diff-line">-  EXPORT SYMBOL('AddStudent')</span>
+<span class="diff-line">-  EXPORT SYMBOL('GetStudent')</span>
+<span class="diff-line">-  EXPORT SYMBOL('UpdateStudent')</span></pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — matches compiled exports</div>
+      <pre><span class="diff-line">+  EXPORT SYMBOL('ADDSTUDENT')</span>
+<span class="diff-line">+  EXPORT SYMBOL('GETSTUDENT')</span>
+<span class="diff-line">+  EXPORT SYMBOL('UPDATESTUDENT')</span></pre>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="compile">Phase 9: Compilation: All Four Modules at Severity 00</h2>
+
+  <p>
+    With all source members in place and the binder source corrected, IBM Bob compiled each module using <code>CRTSQLRPGI</code> with <code>OBJTYPE(*MODULE)</code>. The <code>DFTRDBCOL(SCHADMLIB)</code> parameter is important here — it tells the SQL precompiler to use <code>SCHADMLIB</code> as the default collection for unqualified SQL table references, which means <code>FROM STUDENTS</code> in the RPGLE source correctly resolves to <code>SCHADMLIB.STUDENTS</code> at compile time.
+  </p>
+
+  <div class="callout success">
+    <span class="callout-label">All four modules — severity 00.</span>
+    <code>STUINSERT</code> · <code>STUSELECT</code> · <code>STUUPDATE</code> · <code>STUDELETE</code> — all compiled clean. Zero errors, zero warnings.
+  </div>
+
+  <figure class="screenshot-wrap">
+    <img src="images/All Four Modules at Severity 00.png" alt="All four RPGLE modules compiled at severity 00 in SCHADMLIB" />
+    <figcaption>Compilation results for all four SQLRPGLE modules — severity 00 across the board</figcaption>
+  </figure>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="srvpgm">Phase 10: Service Program and Binding Directory</h2>
+
+  <p>
+    With all four modules compiled, IBM Bob created the <code>STUDSRVP</code> service program and bound the four modules together. The service program exposes eight procedures: <code>ADDSTUDENT</code>, <code>GETSTUDENT</code>, <code>GETSTUDENTS</code>, <code>UPDATESTUDENT</code>, <code>DELETESTUDENT</code>, <code>VALIDATEPINCODE</code>, <code>VALIDATECONTACT</code>, and <code>WRITEAUDIT</code>. The signature string <code>STUADM_V1R0M0</code> is the versioning hook — if I add new procedures in the future, they can be added at the end of the binder source while keeping the existing interface compatible with programs that are already using the service program.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Service Program and Binding Directory.png" alt="Service Program and Binding Directory created in SCHADMLIB" />
+    <figcaption>STUDSRVP service program and STUDBNDDIR binding directory created successfully in SCHADMLIB</figcaption>
+  </figure>
+
+  <p>
+    The <code>ACTGRP(*CALLER)</code> setting means the service program runs in its caller's activation group rather than creating its own. For this application, where the service program is called from Python via a SQL stored procedure or directly via XMLSERVICE, this is the right setting — it avoids creating unnecessary activation groups and keeps resource management straightforward.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="journaling">The Journaling Issue: Understanding IBM i Journaling Behavior</h2>
+
+  <p>
+    After the database tables were created and the RPGLE backend was compiled, IBM Bob tried to insert sample data using the Python <code>ibm_db_dbi</code> driver. The first INSERT failed with <code>SQL0-7008</code> — a file not journaled for commitment control error.
+  </p>
+
+  <p>
+    This one catches developers who are new to Db2 for i. When you connect through ODBC or <code>ibm_db_dbi</code>, the driver typically uses connection-level commitment control. Db2 for i requires tables to be enrolled in a journal before they can participate in committed transactions. Tables created via DDL exist in the database but are not automatically journaled — you have to enroll them explicitly.
+  </p>
+
+  <p>
+    IBM Bob first checked whether a journal already existed in <code>SCHADMLIB</code> using <code>WRKOBJ OBJ(SCHADMLIB/*ALL) OBJTYPE(*JRN)</code>. There was none. It then created the full journal infrastructure in sequence:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">CL — Journal Setup</span>
+      <div class="code-dots"><span></span><span></span><span></span></div>
+    </div>
+    <pre>QSYS/CRTJRNRCV JRNRCV(SCHADMLIB/SCHADMRCV)
+    THRESHOLD(100000)
+    TEXT('Student Admission Journal Receiver')
+    AUT(*EXCLUDE)
+
+QSYS/CRTJRN JRN(SCHADMLIB/SCHADMJRN)
+    JRNRCV(SCHADMLIB/SCHADMRCV)
+    MNGRCV(*SYSTEM) DLTRCV(*YES)
+    TEXT('Student Admission Journal')
+    AUT(*EXCLUDE)
+
+QSYS/STRJRNPF FILE(SCHADMLIB/STUDENTS SCHADMLIB/STUD_AUDIT)
+    JRN(SCHADMLIB/SCHADMJRN)</pre>
+  </div>
+
+  <div class="callout info">
+    <span class="callout-label">MNGRCV(*SYSTEM) and DLTRCV(*YES):</span>
+    IBM Bob used <code>MNGRCV(*SYSTEM)</code> so IBM i manages journal receiver chaining automatically, and <code>DLTRCV(*YES)</code> to allow automatic deletion of detached receivers once they are no longer needed. For a development environment, this keeps the journal from consuming disk space indefinitely. In production, you would typically want to manage receiver retention policy more explicitly.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="python">The Python Driver Numeric Parameter Issue</h2>
+
+  <p>
+    After journaling was in place, IBM Bob loaded 10 sample students using the Python <code>ibm_db_dbi</code> driver. Seven inserted successfully on the first attempt. Three did not. The error was not a CHECK constraint violation — the pincode and contact values were correct. The root cause was a Python driver behavior specific to this IBM i environment.
+  </p>
+
+  <p>
+    When passing large integer values (specifically <code>CONTACT_NO = 9876543210</code>) through Python's <code>?</code> parameterized query binding, the <code>ibm_db_dbi</code> driver failed to map the Python <code>int</code> to <code>NUMERIC(10,0)</code>. The same values worked perfectly when passed as literal strings.
+  </p>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — int fails for large numerics</div>
+      <pre><span class="diff-line">-  ('Priya Patel', 12, ...,</span>
+<span class="diff-line">-    4110001, 9123456780)</span>
+<span class="diff-line">-  # pincode=int, contact=int</span>
+<span class="diff-line">-  # → driver type mapping fails</span></pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — strings work correctly</div>
+      <pre><span class="diff-line">+  ('Priya Patel', 12, ...,</span>
+<span class="diff-line">+    '4110001', '9123456780')</span>
+<span class="diff-line">+  # pincode=str, contact=str</span>
+<span class="diff-line">+  # → Db2 casts string → NUMERIC</span></pre>
+    </div>
+  </div>
+
+  <p>
+    IBM Bob also patched <code>app.py</code> to use the same string-passing approach for the Flask API endpoints — so the production INSERT and UPDATE operations would work correctly for all users. A small fix, but an important one to get right before the application goes live.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="flask">Phases 11–14: The Python Flask Web Application</h2>
+
+  <p>
+    With the database layer solid and the RPGLE backend compiled, IBM Bob built the entire web tier simultaneously. Four <code>write_stream_file</code> calls went out in parallel: <code>db.py</code>, <code>requirements.txt</code>, <code>config.py</code>, and <code>app.py</code>. These landed in <code>/STUADMAPP/WEBSRC</code> on the IFS.
+  </p>
+
+  <h3>The REST API: Five Endpoints</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Method</th><th>Endpoint</th><th>What It Does</th></tr></thead>
+      <tbody>
+        <tr><td><code>POST</code></td><td><code>/api/students</code></td><td>Validate → INSERT → <code>IDENTITY_VAL_LOCAL()</code> → audit → return new ID</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/students</code></td><td>Filter by name/standard/section/status + <code>LIMIT/OFFSET</code> pagination → JSON</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/students/&lt;id&gt;</code></td><td>Single student row → JSON with serialized dates</td></tr>
+        <tr><td><code>PUT</code></td><td><code>/api/students/&lt;id&gt;</code></td><td>Validate → UPDATE → rowcount check → audit → return result</td></tr>
+        <tr><td><code>DELETE</code></td><td><code>/api/students/&lt;id&gt;</code></td><td>Confirm active → <code>UPDATE STATUS='I'</code> → audit → no physical delete</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/stats</code></td><td>Total / active / inactive counts + <code>GROUP BY STANDARD</code> for dashboard</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The <code>_validate_student</code> helper function in <code>app.py</code> mirrors the RPGLE validation logic — same pincode range check, same contact number range check, same date format requirement. Dual validation is intentional: client-side JavaScript catches format errors before the request is sent; server-side Python validates again before touching the database; and the database <code>CHECK</code> constraints act as a final guard. A record that violates the constraints cannot be inserted regardless of how the request was constructed.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/apppy REST API.png" alt="app.py REST API endpoint for POST /api/students with server-side validation" />
+    <figcaption>The api_add_student endpoint showing validation, INSERT, identity retrieval, and audit write</figcaption>
+  </figure>
+
+  <h3>The db.py Connection Helper</h3>
+
+  <p>
+    The database connection uses <code>ibm_db_dbi.connect()</code> with no arguments. This is the same local connection pattern that worked reliably during the DDL execution. The <code>fetchall_dict</code> helper converts the cursor rows into dictionaries using the column names from <code>cursor.description</code>. This makes it easier for the API endpoints to return the database results as JSON.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/dbpy Connection.png" alt="db.py Connection Helper using ibm_db_dbi local connection" />
+    <figcaption>The db.py connection helper using ibm_db_dbi.connect() with the fetchall_dict utility</figcaption>
+  </figure>
+
+  <h3>HTML Templates: One Form, Two Modes</h3>
+
+  <p>
+    The student form template (<code>student_form.html</code>) is shared between Add and Edit operations. Flask passes a <code>MODE</code> value, either <code>add</code> or <code>edit</code>, and for edit operations it also passes the <code>STUDENT_ID</code>. The JavaScript uses these values to decide which API endpoint to call when the form is submitted. For a new student, it calls <code>POST /api/students</code>. For an existing student, it calls <code>PUT /api/students/&lt;id&gt;</code>. I liked this approach because there is only one form to maintain instead of having two almost identical templates.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/HTML Templates.png" alt="student_form.html rendered in add mode — the full admission data entry form" />
+    <figcaption>The shared student form template with personal, academic, family, and contact sections</figcaption>
+  </figure>
+
+  <h3>JavaScript: Real-Time Validation and CSV Export</h3>
+
+  <p>
+    The <code>student_form.js</code> file drives the form validation using a field definition map (<code>FIELDS</code>) that describes each field's type and constraints. The validation logic covers required fields, age range, date format, pincode regex (<code>/^\d{7}$/</code>), and contact regex (<code>/^\d{10}$/</code>). Inline red error messages appear next to each field without a page reload.
+  </p>
+
+  <p>
+    The student list page (<code>students_list.js</code>) includes client-side column sorting on the cached data, filter parameter building with <code>URLSearchParams</code>, and a CSV export that generates a downloadable file directly in the browser from the current page's data — no server round-trip needed for the export.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="results">Final Results: 16 Phases, All Complete</h2>
+
+  <p>
+    After resolving the DDL CCSID issues, the journaling requirement, the binder symbol case problem, and the Python driver numeric parameter behavior, the full build reached completion.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/16 Phases - All Complete.png" alt="IBM Bob's todo list with all 16 phases marked complete" />
+    <figcaption>All 16 phases marked complete in IBM Bob's build tracker</figcaption>
+  </figure>
+
+  <div class="callout success">
+    <span class="callout-label">All 16 phases complete. 4 RPGLE modules at severity 00. Full-stack application running on IBM i.</span>
+    From QSYS source members through compiled service program to a live Flask web application with 10 sample students loaded — all built in a single development session using IBM i Developer Mode in IBM Bob Premium Package for i (PPI).
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="screens">The Application Running</h2>
+
+  <p>
+    Once Flask was started with <code>python3 -m flask run --host=0.0.0.0 --port=5000</code>, the application was accessible from a browser at <code>http://p10adt2.rch.stglabs.ibm.com:5000/</code>.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Student Admission System dashboard.png" alt="Student Admission System dashboard showing live stats" />
+    <figcaption>Dashboard at / — live counts pulled from /api/stats, students by standard breakdown</figcaption>
+  </figure>
+
+  <figure class="screenshot-wrap">
+    <img src="images/All Students list page.png" alt="All Students list page — 10 rows, filter bar, sort headers, Deactivate buttons" />
+    <figcaption>The student list with filter controls, sortable columns, and per-row Edit and Deactivate actions</figcaption>
+  </figure>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Add New Student form.png" alt="Add New Student form — all sections filled, real-time validation visible" />
+    <figcaption>The Add Student form showing the 7-digit pincode validation feedback</figcaption>
+  </figure>
+
+  <h3>Application Architecture</h3>
+
+  <p>
+    The diagram below traces the full request lifecycle — from the browser through the Python Flask REST layer on the IFS, through Db2 for i, and into the ILE RPGLE service program compiled in SCHADMLIB. Every component IBM Bob built is shown with its role in the flow.
+  </p>
+
+  <div class="mermaid-wrap">
+    <div class="mermaid">
+flowchart LR
+    Browser(["🌐 Browser\nHTTP :5000"])
+
+    subgraph IFS ["IFS — /STUADMAPP/WEBSRC  ·  Python Flask Layer"]
+        direction TB
+        Routes["app.py\nREST API Routes\nPOST · GET · PUT · DELETE\n/api/students  /api/stats"]
+        Validate["_validate_student()\nServer-side validation\nPincode · Contact · Date · Age"]
+        DBHelper["db.py\nibm_db_dbi.connect()\nfetchall_dict()"]
+        UI["HTML Templates\ndashboard · students_list\nstudent_form  ·  base"]
+        JS["JS Validation\nstudent_form.js\nstudents_list.js\nCSV export"]
+    end
+
+    subgraph IBMI ["SCHADMLIB — IBM i  ·  ILE Backend + Db2 for i"]
+        direction TB
+        subgraph ILE ["ILE Service Program  ·  STUDSRVP *SRVPGM"]
+            direction LR
+            MOD1["STUINSERT\nAddStudent\nValidatePincode\nValidateContact\nWriteAudit"]
+            MOD2["STUSELECT\nGetStudent\nGetStudents"]
+            MOD3["STUUPDATE\nUpdateStudent"]
+            MOD4["STUDELETE\nDeleteStudent\nsoft-delete"]
+        end
+        BNDDIR["STUDBNDDIR\n*BNDDIR"]
+        subgraph DB2 ["Db2 for i  ·  Journaled  ·  SCHADMJRN"]
+            STUDENTS["STUDENTS\n17 cols · IDENTITY PK\nSTATUS A/I · CHECK constraints"]
+            AUDIT["STUD_AUDIT\nAudit trail\nINSERT · UPDATE · DELETE ops"]
+            IDX["Indexes\nIDX_STUD_STATUS\nIDX_STUD_STD_SEC\nIDX_STUD_NAME"]
+        end
+    end
+
+    Browser -->|"HTTP GET/POST\nHTML pages"| UI
+    Browser -->|"AJAX JSON\nREST calls"| Routes
+    Routes --> Validate
+    Validate --> DBHelper
+    Routes --> DBHelper
+    DBHelper -->|"ibm_db_dbi\nSQL INSERT / SELECT\nUPDATE / soft-DELETE"| STUDENTS
+    STUDENTS -->|"audit write\nper DML op"| AUDIT
+    STUDENTS -.- IDX
+    ILE -->|"bound into"| BNDDIR
+    MOD1 & MOD2 & MOD3 & MOD4 -->|"EXEC SQL\nDFTRDBCOL(SCHADMLIB)"| STUDENTS
+    UI --> JS
+
+    style Browser fill:#0f62fe,color:#fff,stroke:#0043ce
+    style IFS fill:#f4f4f4,stroke:#525252,color:#161616
+    style IBMI fill:#edf5ff,stroke:#0f62fe,color:#161616
+    style ILE fill:#ffd6e8,stroke:#d02670,color:#161616
+    style DB2 fill:#d9fbfb,stroke:#007d79,color:#161616
+    style Routes fill:#0f62fe,color:#fff,stroke:#0043ce
+    style Validate fill:#ffffff,color:#161616,stroke:#525252
+    style DBHelper fill:#0f62fe,color:#fff,stroke:#0043ce
+    style UI fill:#ffffff,color:#161616,stroke:#525252
+    style JS fill:#ffffff,color:#161616,stroke:#525252
+    style MOD1 fill:#d02670,color:#fff,stroke:#a01050
+    style MOD2 fill:#d02670,color:#fff,stroke:#a01050
+    style MOD3 fill:#d02670,color:#fff,stroke:#a01050
+    style MOD4 fill:#d02670,color:#fff,stroke:#a01050
+    style BNDDIR fill:#d02670,color:#fff,stroke:#a01050
+    style STUDENTS fill:#007d79,color:#fff,stroke:#005252
+    style AUDIT fill:#007d79,color:#fff,stroke:#005252
+    style IDX fill:#007d79,color:#fff,stroke:#005252
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="productivity">Productivity Comparison</h2>
+
+  <p>
+    The table below compares the time I would typically expect to spend developing this application manually with the time it took using IBM i Developer Mode in IBM Bob Premium Package for i (PPI).
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Task</th><th>Manually</th><th>With IBM i Developer Mode</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>QSYS source physical files + IFS directory structure</td>
+          <td>30 min</td>
+          <td>~2 minutes</td>
+        </tr>
+        <tr>
+          <td>SQL DDL — table, indexes, audit table, labels, grants</td>
+          <td>2–3 hours</td>
+          <td>~8 minutes (including 3 DDL fix cycles)</td>
+        </tr>
+        <tr>
+          <td>Journal setup (receiver, journal, STRJRNPF)</td>
+          <td>20 min</td>
+          <td>Included — IBM Bob identified the need from the SQL0-7008 error</td>
+        </tr>
+        <tr>
+          <td>RPGLE copybook + 4 SQLRPGLE service modules</td>
+          <td>2–3 days</td>
+          <td>~20 minutes</td>
+        </tr>
+        <tr>
+          <td>Binder source + CRTSRVPGM + CRTBNDDIR</td>
+          <td>1–2 hours</td>
+          <td>~5 minutes (including binder symbol case fix)</td>
+        </tr>
+        <tr>
+          <td>Python Flask app (5 REST endpoints, validation, audit)</td>
+          <td>1–2 days</td>
+          <td>~15 minutes</td>
+        </tr>
+        <tr>
+          <td>HTML templates (4 files), CSS, JavaScript (3 files)</td>
+          <td>2–3 days</td>
+          <td>~15 minutes</td>
+        </tr>
+        <tr>
+          <td>Diagnosing CCSID 65535, journaling, driver numeric issue</td>
+          <td>1–2 days</td>
+          <td>~20 minutes across all fix cycles</td>
+        </tr>
+        <tr style="font-weight:700; background:#e8f4fd;">
+          <td>Total estimated</td>
+          <td>~2–3 weeks</td>
+          <td>&lt; 2 hours</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    The troubleshooting time stands out most. CCSID 65535 blocking <code>DEFAULT USER</code>, tables requiring journaling before DML, and the Python driver's numeric parameter handling for large integers — these are all real IBM i platform behaviors that are not well-documented in one place. Finding and resolving them manually would typically involve reading multiple IBM documentation pages, Stack Overflow threads, and forum posts across multiple sessions. IBM Bob diagnosed and fixed all three in the same session they appeared, without interrupting the build flow.
+  </p>
+
+  <h3>What Made This Possible</h3>
+
+  <div class="callout success">
+    Every IBM i capability used in this build came through the <strong>Premium Package for i (PPI)</strong>. That included creating QSYS source members, executing CL commands, running SQL against QSYS2 SQL Services to verify objects, writing files to the IFS through PASE, reading compiler output to diagnose failures, and using IBM i Skills for SQLRPGLE, binder source, CCSID, journaling, and Db2 for i DDL. Without PPI, this would have been mainly a code generation exercise. With <strong>IBM i Developer Mode</strong> and <strong>Premium Package for i (PPI)</strong>, IBM Bob worked as a development partner that could build, compile, validate, troubleshoot, and verify the application directly on the IBM i system.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="demo">Watch It in Action</h2>
+
+  <p>
+    A full walkthrough of the Student Admission Management System running live on IBM i, built using <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for i (PPI)</strong>.
+  </p>
+
+  <div class="video-wrap">
+    <iframe src="https://www.youtube.com/embed/0s75MFW4XX4?si=XqUP7La_qRtkZzFc"
+            title="Building a Student Admission Management System on IBM i with IBM Bob"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="nextsteps">Next Steps</h2>
+
+  <p>
+    If you want to try <strong>IBM Bob</strong> and <strong>IBM Bob Premium Package for i (PPI)</strong>
+    yourself, here are the resources to get started:
+  </p>
+
+  <ul>
+    <li>
+      <strong>Welcome to IBM Bob</strong> —
+      <a href="https://bob.ibm.com/docs/ide" target="_blank" rel="noopener">bob.ibm.com/docs/ide</a>
+    </li>
+    <li>
+      <strong>Start Your Free Trial</strong> —
+      <a href="https://bob.ibm.com/trial" target="_blank" rel="noopener">bob.ibm.com/trial</a>
+    </li>
+    <li>
+      <strong>IBM Bob Premium Package for i (PPI)</strong> —
+      <a href="https://bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index" target="_blank" rel="noopener">bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index</a>
+    </li>
+    <li>
+      <strong>Frequently Asked Questions</strong> —
+      <a href="https://bob.ibm.com/docs/ide/faq" target="_blank" rel="noopener">bob.ibm.com/docs/ide/faq</a>
+    </li>
+  </ul>
+
+</div><!-- .page-wrap -->
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#edf5ff',
+      primaryBorderColor: '#0f62fe',
+      primaryTextColor: '#161616',
+      lineColor: '#525252',
+      fontSize: '13px'
+    },
+    flowchart: { curve: 'basis', padding: 20 }
+  });
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="tags">
+    <span>IBM i</span>
+    <span>ILE RPG</span>
+    <span>SQLRPGLE</span>
+    <span>Db2 for i</span>
+    <span>Service Programs</span>
+    <span>Binding Directory</span>
+    <span>Python Flask</span>
+    <span>IBM Bob</span>
+    <span>Developer Mode</span>
+    <span>Premium Package for i (PPI)</span>
+    <span>IBM i Skills</span>
+    <span>Journaling</span>
+    <span>Student Admission</span>
+    <span>Full-Stack IBM i</span>
+  </div>
+  <div class="made-with">Made with IBM Bob · IBM Bob Premium Package for i (PPI) · IBM i Developer Mode</div>
+</footer>
+
+</body>
+</html>
