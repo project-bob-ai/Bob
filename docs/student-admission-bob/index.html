@@ -321,25 +321,6 @@
       font-size: .75rem; color: #525252;
     }
 
-    /* ── Mermaid diagram ─────────────────────────────────────────────────── */
-    .mermaid-wrap {
-      margin: 28px 0;
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: var(--ibm-gray-10);
-      padding: 24px 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.06);
-    }
-    .mermaid-wrap .mermaid {
-      display: flex;
-      justify-content: center;
-    }
-    .mermaid-wrap svg {
-      max-width: 100%;
-      height: auto;
-    }
-
     @media (max-width: 600px) {
       .site-header { padding: 36px 16px 28px; }
       h2 { font-size: 1.5rem; }
@@ -921,76 +902,6 @@ QSYS/STRJRNPF FILE(SCHADMLIB/STUDENTS SCHADMLIB/STUD_AUDIT)
     <figcaption>The Add Student form showing the 7-digit pincode validation feedback</figcaption>
   </figure>
 
-  <h3>Application Architecture</h3>
-
-  <p>
-    The diagram below traces the full request lifecycle — from the browser through the Python Flask REST layer on the IFS, through Db2 for i, and into the ILE RPGLE service program compiled in SCHADMLIB. Every component IBM Bob built is shown with its role in the flow.
-  </p>
-
-  <div class="mermaid-wrap">
-    <div class="mermaid">
-flowchart LR
-    Browser(["🌐 Browser\nHTTP :5000"])
-
-    subgraph IFS ["IFS — /STUADMAPP/WEBSRC  ·  Python Flask Layer"]
-        direction TB
-        Routes["app.py\nREST API Routes\nPOST · GET · PUT · DELETE\n/api/students  /api/stats"]
-        Validate["_validate_student()\nServer-side validation\nPincode · Contact · Date · Age"]
-        DBHelper["db.py\nibm_db_dbi.connect()\nfetchall_dict()"]
-        UI["HTML Templates\ndashboard · students_list\nstudent_form  ·  base"]
-        JS["JS Validation\nstudent_form.js\nstudents_list.js\nCSV export"]
-    end
-
-    subgraph IBMI ["SCHADMLIB — IBM i  ·  ILE Backend + Db2 for i"]
-        direction TB
-        subgraph ILE ["ILE Service Program  ·  STUDSRVP *SRVPGM"]
-            direction LR
-            MOD1["STUINSERT\nAddStudent\nValidatePincode\nValidateContact\nWriteAudit"]
-            MOD2["STUSELECT\nGetStudent\nGetStudents"]
-            MOD3["STUUPDATE\nUpdateStudent"]
-            MOD4["STUDELETE\nDeleteStudent\nsoft-delete"]
-        end
-        BNDDIR["STUDBNDDIR\n*BNDDIR"]
-        subgraph DB2 ["Db2 for i  ·  Journaled  ·  SCHADMJRN"]
-            STUDENTS["STUDENTS\n17 cols · IDENTITY PK\nSTATUS A/I · CHECK constraints"]
-            AUDIT["STUD_AUDIT\nAudit trail\nINSERT · UPDATE · DELETE ops"]
-            IDX["Indexes\nIDX_STUD_STATUS\nIDX_STUD_STD_SEC\nIDX_STUD_NAME"]
-        end
-    end
-
-    Browser -->|"HTTP GET/POST\nHTML pages"| UI
-    Browser -->|"AJAX JSON\nREST calls"| Routes
-    Routes --> Validate
-    Validate --> DBHelper
-    Routes --> DBHelper
-    DBHelper -->|"ibm_db_dbi\nSQL INSERT / SELECT\nUPDATE / soft-DELETE"| STUDENTS
-    STUDENTS -->|"audit write\nper DML op"| AUDIT
-    STUDENTS -.- IDX
-    ILE -->|"bound into"| BNDDIR
-    MOD1 & MOD2 & MOD3 & MOD4 -->|"EXEC SQL\nDFTRDBCOL(SCHADMLIB)"| STUDENTS
-    UI --> JS
-
-    style Browser fill:#0f62fe,color:#fff,stroke:#0043ce
-    style IFS fill:#f4f4f4,stroke:#525252,color:#161616
-    style IBMI fill:#edf5ff,stroke:#0f62fe,color:#161616
-    style ILE fill:#ffd6e8,stroke:#d02670,color:#161616
-    style DB2 fill:#d9fbfb,stroke:#007d79,color:#161616
-    style Routes fill:#0f62fe,color:#fff,stroke:#0043ce
-    style Validate fill:#ffffff,color:#161616,stroke:#525252
-    style DBHelper fill:#0f62fe,color:#fff,stroke:#0043ce
-    style UI fill:#ffffff,color:#161616,stroke:#525252
-    style JS fill:#ffffff,color:#161616,stroke:#525252
-    style MOD1 fill:#d02670,color:#fff,stroke:#a01050
-    style MOD2 fill:#d02670,color:#fff,stroke:#a01050
-    style MOD3 fill:#d02670,color:#fff,stroke:#a01050
-    style MOD4 fill:#d02670,color:#fff,stroke:#a01050
-    style BNDDIR fill:#d02670,color:#fff,stroke:#a01050
-    style STUDENTS fill:#007d79,color:#fff,stroke:#005252
-    style AUDIT fill:#007d79,color:#fff,stroke:#005252
-    style IDX fill:#007d79,color:#fff,stroke:#005252
-    </div>
-  </div>
-
   <!-- ─────────────────────────────────────────────────────────────────── -->
   <h2 id="productivity">Productivity Comparison</h2>
 
@@ -1106,22 +1017,6 @@ flowchart LR
   </ul>
 
 </div><!-- .page-wrap -->
-
-<script src="../js/mermaid.min.js"></script>
-<script>
-  mermaid.initialize({
-    startOnLoad: true,
-    theme: 'base',
-    themeVariables: {
-      primaryColor: '#edf5ff',
-      primaryBorderColor: '#0f62fe',
-      primaryTextColor: '#161616',
-      lineColor: '#525252',
-      fontSize: '13px'
-    },
-    flowchart: { curve: 'basis', padding: 20 }
-  });
-</script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════ -->
 <!-- FOOTER                                                                  -->
