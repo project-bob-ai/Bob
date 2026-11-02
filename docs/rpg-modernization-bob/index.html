@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modernizing a Native RPG Program with a Program-Described Printer File to Free-Format RPGLE with an Externally Described Printer File</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ibm-blue-60:   #0f62fe;
+      --ibm-blue-70:   #0043ce;
+      --ibm-blue-10:   #edf5ff;
+      --ibm-gray-100:  #161616;
+      --ibm-gray-70:   #525252;
+      --ibm-gray-20:   #e0e0e0;
+      --ibm-gray-10:   #f4f4f4;
+      --ibm-white:     #ffffff;
+      --ibm-green-60:  #198038;
+      --ibm-green-10:  #defbe6;
+      --ibm-red-60:    #da1e28;
+      --ibm-red-10:    #fff1f1;
+      --ibm-yellow-30: #f1c21b;
+      --ibm-yellow-10: #fdf6dd;
+
+      --blue:      var(--ibm-blue-60);
+      --blue-dark: var(--ibm-blue-70);
+      --green:     var(--ibm-green-60);
+      --red:       var(--ibm-red-60);
+      --yellow:    var(--ibm-yellow-30);
+      --gray-200:  var(--ibm-gray-20);
+      --gray-700:  var(--ibm-gray-70);
+      --gray-900:  var(--ibm-gray-100);
+      --white:     var(--ibm-white);
+      --term-bg:   #161616;
+
+      --font-sans: 'IBM Plex Sans', 'Segoe UI', Arial, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --max-width: 860px;
+      --radius:    4px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--gray-900);
+      background: var(--white);
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .site-header {
+      background: var(--ibm-blue-60);
+      color: var(--white);
+      padding: 52px 24px 44px;
+      text-align: center;
+      border-bottom: 4px solid var(--ibm-blue-70);
+    }
+
+    .bob-avatar-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+    .bob-avatar-img {
+      width: 100px; height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,.4));
+    }
+
+    .header-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 2px;
+      font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: 4px 14px; margin-bottom: 18px;
+      font-family: var(--font-mono);
+    }
+
+    .site-header h1 {
+      font-size: clamp(1.625rem, 3.8vw, 2.5rem);
+      font-weight: 700;
+      line-height: 1.2;
+      max-width: 780px;
+      margin: 0 auto 16px;
+      letter-spacing: -.015em;
+    }
+
+    .site-header .meta {
+      display: flex; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+      font-size: .875rem; opacity: .75;
+    }
+    .site-header .meta span::before { content: '· '; }
+    .site-header .meta span:first-child::before { content: ''; }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .tldr {
+      background: var(--ibm-blue-10);
+      border-left: 4px solid var(--blue);
+      max-width: var(--max-width);
+      margin: 40px auto 0;
+      padding: 16px 20px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: .9375rem;
+    }
+    .tldr strong { color: var(--blue-dark); font-weight: 600; }
+
+    .page-wrap {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Typography ──────────────────────────────────────────────────────── */
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin: 52px 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--ibm-blue-60);
+      letter-spacing: -.01em;
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 32px 0 10px;
+    }
+
+    h4 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 22px 0 8px;
+    }
+
+    p { margin-bottom: 16px; font-size: 1rem; line-height: 1.65; }
+
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { color: var(--blue-dark); text-decoration: underline; }
+    strong { font-weight: 600; }
+
+    ul, ol { padding-left: 24px; margin-bottom: 16px; }
+    li { margin-bottom: 6px; line-height: 1.65; }
+
+    /* ── Inline code ─────────────────────────────────────────────────────── */
+    code {
+      font-family: var(--font-mono);
+      font-size: .875rem;
+      background: var(--ibm-gray-10);
+      color: var(--gray-900);
+      padding: 1px 6px;
+      border-radius: 2px;
+      border: 1px solid var(--gray-200);
+    }
+
+    /* ── Code blocks ─────────────────────────────────────────────────────── */
+    .code-block {
+      margin: 22px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid #393939;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .code-block .code-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      background: #262626; padding: 8px 16px;
+      border-bottom: 1px solid #393939;
+    }
+    .code-block .code-lang {
+      font-family: var(--font-mono); font-size: .75rem;
+      color: #a8a8a8; text-transform: uppercase; letter-spacing: .1em;
+    }
+    .code-block .code-dots { display: flex; gap: 6px; }
+    .code-block .code-dots span { width: 11px; height: 11px; border-radius: 50%; }
+    .code-block .code-dots span:nth-child(1) { background: #ff5f56; }
+    .code-block .code-dots span:nth-child(2) { background: #ffbd2e; }
+    .code-block .code-dots span:nth-child(3) { background: #27c93f; }
+    .code-block pre {
+      background: var(--term-bg); color: #f4f4f4;
+      padding: 20px; overflow-x: auto;
+      font-family: var(--font-mono); font-size: .875rem;
+      line-height: 1.6; margin: 0;
+    }
+
+    /* ── Screenshot ──────────────────────────────────────────────────────── */
+    .screenshot-wrap {
+      margin: 22px 0; border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .screenshot-wrap img { width: 100%; display: block; }
+    .screenshot-wrap figcaption {
+      background: var(--ibm-gray-10);
+      border-top: 1px solid var(--gray-200);
+      padding: 7px 14px;
+      font-size: .8125rem; color: var(--gray-700);
+      font-family: var(--font-mono);
+    }
+
+    /* ── Diff / before-after ─────────────────────────────────────────────── */
+    .diff-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin: 22px 0;
+    }
+    @media (max-width: 640px) { .diff-wrap { grid-template-columns: 1fr; } }
+    .diff-pane { border-radius: var(--radius); overflow: hidden; }
+    .diff-pane .diff-label {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px; font-size: .75rem; font-weight: 600;
+      font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .08em;
+    }
+    .diff-pane.before .diff-label { background: #2d1a1a; color: #ff8389; }
+    .diff-pane.after  .diff-label { background: #0e2316; color: #42be65; }
+    .diff-pane pre {
+      background: var(--term-bg); color: #f4f4f4;
+      padding: 16px; font-family: var(--font-mono);
+      font-size: .875rem; line-height: 1.6; margin: 0; overflow-x: auto;
+    }
+    .diff-pane.before pre .diff-line { color: #ff8389; }
+    .diff-pane.after  pre .diff-line { color: #42be65; }
+
+    /* ── Tables ──────────────────────────────────────────────────────────── */
+    .table-wrap { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
+    thead tr { background: var(--ibm-blue-60); color: var(--white); }
+    thead th { padding: 12px 16px; text-align: left; font-weight: 600; font-size: .875rem; }
+    tbody tr { border-bottom: 1px solid var(--gray-200); }
+    tbody tr:nth-child(even) { background: var(--ibm-gray-10); }
+    tbody tr:hover { background: var(--ibm-blue-10); }
+    tbody td { padding: 11px 16px; font-size: .9375rem; vertical-align: top; }
+
+    /* ── Callouts ────────────────────────────────────────────────────────── */
+    .callout {
+      border-radius: var(--radius); padding: 14px 18px;
+      margin: 18px 0; font-size: .9375rem; line-height: 1.55;
+    }
+    .callout.info    { background: var(--ibm-blue-10);   border-left: 4px solid var(--blue); }
+    .callout.warn    { background: var(--ibm-yellow-10); border-left: 4px solid var(--yellow); }
+    .callout.success { background: var(--ibm-green-10);  border-left: 4px solid var(--green); }
+    .callout.error   { background: var(--ibm-red-10);    border-left: 4px solid var(--red); }
+    .callout .callout-label  { display: block; margin-bottom: 4px; font-weight: 600; color: var(--gray-900); }
+    .callout strong  { font-weight: 600; color: var(--gray-900); }
+
+    /* ── Blockquote ──────────────────────────────────────────────────────── */
+    blockquote {
+      border-left: 4px solid var(--blue);
+      margin: 18px 0; padding: 12px 20px;
+      background: var(--ibm-gray-10);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-style: italic; color: var(--gray-700); font-size: .9375rem;
+    }
+    blockquote p { margin: 0; }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    .site-footer {
+      background: #161616; color: #a8a8a8;
+      text-align: center; padding: 32px 24px;
+      font-size: .875rem; font-family: var(--font-mono);
+      border-top: 4px solid var(--blue);
+    }
+    .site-footer .tags { margin-top: 12px; }
+    .site-footer .tags span {
+      display: inline-block; background: #262626;
+      border: 1px solid #393939; border-radius: 2px;
+      padding: 3px 10px; margin: 3px; font-size: .75rem; color: #a8a8a8;
+    }
+    .author-byline {
+      display: flex; align-items: center; gap: 10px;
+      justify-content: center; margin-top: 18px;
+      font-size: .875rem; opacity: .8;
+    }
+    .author-byline .author-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .made-with {
+      margin-top: 22px; padding-top: 14px;
+      border-top: 1px solid #393939;
+      font-size: .75rem; color: #525252;
+    }
+
+    /* ── Video embed ─────────────────────────────────────────────────────── */
+    .video-wrap {
+      margin: 22px 0;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+    .video-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    @media (max-width: 600px) {
+      .site-header { padding: 36px 16px 28px; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 1.25rem; }
+      .page-wrap { padding: 0 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="bob-avatar-wrap">
+    <img src="../images/Bob.png" alt="IBM Bob" class="bob-avatar-img" />
+  </div>
+  <div class="header-badge">IBM Bob · IBM i Developer Mode · RPG Modernization Workflow</div>
+  <h1>Modernizing a Native RPG Program with a Program-Described Printer File to Free-Format RPGLE with an Externally Described Printer File</h1>
+  <div class="author-byline">
+    <div class="author-avatar">MC</div>
+    <span>By Matta Chandrashekar &nbsp;·&nbsp; October 2026</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- PAGE BODY                                                               -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+  <div class="tldr">
+    <strong>Quick Summary —</strong> Using <strong>IBM Bob Premium Package for i (PPI)</strong>, <strong>IBM i Developer Mode</strong>, and the built-in <strong>RPG Modernization workflow</strong>, I modernized a native fixed-format RPG report program with a program-described printer file into free-format RPGLE with an externally described DDS printer file. The workflow handled the conversion, compilation, and error correction while keeping the original source unchanged.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="program">The Program: A Native RPG Program with a Program-Described Printer File</h2>
+
+  <p>
+    The program I selected for modernization was <a href="studrpt.rpgle"><code>STUDRPT</code></a>. It reads student records from the <code>STUDENP</code> physical file and prints them using a program-described printer file.
+  </p>
+
+  <p>
+    The printer file layout, including field positions, spacing, column headings, and print formats, is defined directly in the RPG source using O-specs. Since free-format RPGLE does not support O-specs, these definitions must first be converted into an external DDS printer file.
+  </p>
+
+  <p>
+    IBM Bob's RPG Modernization workflow handles the full conversion — from externalizing a program-described printer file into DDS through to modernizing the RPG program to free-format.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="workflow">The RPG Modernization Workflow: What It Does and How It Starts</h2>
+
+  <p>
+    <strong>IBM Bob with IBM i Developer Mode</strong> provides a built-in <strong>RPG Modernization</strong> workflow. IBM i Developer Mode must be active before starting the workflow, as it enables IBM Bob to connect directly to the IBM i system, access source members, execute CL commands, run SQL against Db2 for i, and compile programs.
+  </p>
+
+  <p>
+    When I triggered the RPG Modernization workflow, IBM Bob detected that <code>STUDRPT.rpgle</code> was already open in the editor and offered to use it as the input. After I confirmed, it read the source, identified the program type as RPG IV fixed format, and started the preparation steps.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/workflow_home_page.png" alt="STUDRPT.rpgle open in VS Code with O-spec lines visible starting at line 31, and the IBM Bob RPG Modernization workflow panel on the right" />
+    <figcaption>STUDRPT.rpgle open in the editor with the RPG Modernization workflow panel. IBM i Developer Mode is active.</figcaption>
+  </figure>
+
+  <p>
+    The workflow then created a temporary working copy named <code>STUDRPT_T.RPGLE</code> in the same library. All intermediate changes were made to this copy, while the final free-format program was saved as a new member named <code>STUDR_FREE.RPGLE</code>. The original <code>STUDRPT.rpgle</code> remained untouched throughout the process.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="precompile">Step 1: Pre-Conversion Compilation</h2>
+
+  <p>
+    Before making any source changes, IBM Bob provided the compilation option to establish a baseline. This helps identify any existing compilation errors before modernization and distinguish them from issues introduced during conversion.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Pre-Conversion Compilation.png" alt="IBM Bob showing the Pre-Conversion Compilation step with the temp member STUDRPT_T created, output location set to STUDR_FREE.RPGLE, and the option to compile or skip before converting" />
+    <figcaption>Pre-Conversion Compilation — temp copy STUDRPT_T created, output set to STUDR_FREE.RPGLE, compile option presented.</figcaption>
+  </figure>
+
+  <p>
+    IBM Bob used <code>get_compile_actions</code> to identify the appropriate compile command and provided <code>CRTBNDRPG</code> to compile the temporary copy. After compilation, it queried <code>QSYS2.OBJECT_STATISTICS</code> to verify that the <code>STUDLIB/STUDRPT_T (*PGM)</code> program object was created.
+  </p>
+
+  <div class="callout success">
+    <span class="callout-label">Pre-conversion compilation passed.</span>
+    <code>STUDLIB/STUDRPT_T (*PGM)</code> created. Severity 00. The source was clean and ready for conversion.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="detection">Step 2: Detecting I-Specs and O-Specs</h2>
+
+  <p>
+    Next, the workflow analyzed the source to identify program-described I-specs and O-specs that might need to be externalized before converting the program to free-format RPGLE. It used separate subagents for each detection step.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Detect I spec O spec.png" alt="IBM Bob showing the I-spec and O-spec detection results — STUDENP confirmed as externally described with no I-specs found, and STUDRPTR printer file confirmed as program-described with O-specs present starting at line 31" />
+    <figcaption>I-spec and O-spec detection results — no I-specs, O-specs found at line 31.</figcaption>
+  </figure>
+
+  <h3>I-Spec Detection</h3>
+
+  <p>
+    The I-spec detection subagent checked the source for program-described input specifications. It found that the <code>STUDENP</code> database file was already externally described through DDS, as indicated by the <code>E</code> in column 22 of its F-spec. No I-specs were present in the source.
+  </p>
+
+  <div class="callout info">
+    <span class="callout-label">I-Spec Detection result:</span>
+    <code>hasISpecs: false</code> and <code>hasCycleLogic: false</code>. The I-spec externalization step was automatically skipped.
+  </div>
+
+  <h3>O-Spec Detection</h3>
+
+  <p>
+    The O-spec detection subagent checked the source for program-described output specifications. It identified the <code>OSTUDRPTR</code> printer file at line 31 and confirmed that it was program-described. Based on this finding, the workflow proceeded to the O-spec externalization step.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="externalize">Step 3: Externalizing O-Specs to a DDS Printer File</h2>
+
+  <p>
+    The workflow started a separate subtask for O-spec conversion. Before analyzing the source, IBM Bob loaded two IBM i Skills to guide the conversion.
+  </p>
+
+  <ul>
+    <li><strong><code>rpg-pgmdb-conversion</code></strong> – Provides rules for identifying program-described and externally described files and distinguishing input and output specifications.</li>
+    <li><strong><code>rpg-ospec-conversion</code></strong> – Provides guidelines for converting O-specs into DDS printer files, including field positioning, overflow indicators, and spacing keywords.</li>
+  </ul>
+
+  <p>
+    The subtask also maintained a todo list to track the conversion steps, from analyzing the source and generating the DDS printer file to compiling it, updating the RPG program, and verifying the final changes.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/O spec Externalization.png" alt="IBM Bob O-Spec Externalization subtask showing the skills rpg-pgmdb-conversion and rpg-ospec-conversion being loaded, and the full todo list for the subtask visible in the right panel" />
+    <figcaption>O-Spec Externalization subtask — two skills loaded, todo list tracking the full conversion plan.</figcaption>
+  </figure>
+
+  <h3>Generating the External DDS Printer File</h3>
+
+  <p>
+    IBM Bob generated the DDS printer file <code>STUDRPTR.PRTF</code> in <code>STUDLIB/QDDSSRC</code>. The 37 O-spec lines were converted into DDS record formats.
+  </p>
+
+  <p>
+    The three HEAD print groups were converted into separate record formats: <code>HEAD1</code>, <code>HEAD2</code>, and <code>HEAD3</code>. The detail and footer formats were retained as <code>DTL</code> and <code>END</code>. IBM Bob also translated the field positions and spacing specifications into the corresponding DDS keywords.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Extternal PRTF compile.png" alt="STUDRPTR.PRTF DDS source open in the editor with all record formats visible, and the IBM Bob panel showing the CRTPRTF command executed successfully with CPC7301 confirming the file was created in STUDLIB" />
+    <figcaption>STUDRPTR.PRTF open in the editor. Right panel: CRTPRTF succeeded — CPC7301: File STUDRPTR created in library STUDLIB.</figcaption>
+  </figure>
+
+  <p>
+    The printer file was then compiled using <code>CRTPRTF</code>. IBM i confirmed its successful creation with message <code>CPC7301: File STUDRPTR created in library STUDLIB</code>.
+  </p>
+
+  <h3>Updating the RPG Source</h3>
+
+  <p>
+    After generating the DDS printer file, IBM Bob made the following changes to the temporary RPG source:
+  </p>
+
+  <ol>
+    <li>Updated the printer file F-spec from program-described (<code>F</code>) to externally described (<code>E</code>).</li>
+    <li>Changed the overflow indicator from <code>OFLIND(*INOF)</code> to <code>OFLIND(*IN01)</code>.</li>
+    <li>Replaced the <code>EXCEPT</code> operations with corresponding <code>WRITE</code> operations, referencing the new DDS record formats.</li>
+    <li>Removed all 37 O-spec lines from the RPG source.</li>
+  </ol>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Temporary Program Changes.png" alt="Bob Edit Preview diff view of STUDRPT_T.RPGLE showing the F-spec updated from F to E with OFLIND(*IN01), EXCEPT opcodes replaced with WRITE opcodes, and all 37 O-spec lines highlighted in red indicating removal" />
+    <figcaption>Source diff — F-spec updated to externally described, EXCEPT replaced with WRITE, 37 O-spec lines removed.</figcaption>
+  </figure>
+
+  <div class="diff-wrap">
+    <div class="diff-pane before">
+      <div class="diff-label">Before — program-described printer file</div>
+      <pre><span class="diff-line">- FSTUDRPTR  O    F  132  PRINTER OFLIND(*INOF)</span>
+<span class="diff-line">- C                   EXCEPT    HEAD</span>
+<span class="diff-line">- C   OF              EXCEPT    HEAD</span>
+<span class="diff-line">- C                   EXCEPT    DTL</span>
+<span class="diff-line">- C                   EXCEPT    END</span>
+<span class="diff-line">- OSTUDRPTR  E            HEAD     1 01</span>
+<span class="diff-line">- O                               10 'Student ID'</span>
+<span class="diff-line">- ... 30 more O-spec lines</span></pre>
+    </div>
+    <div class="diff-pane after">
+      <div class="diff-label">After — externally described printer file</div>
+      <pre><span class="diff-line">+ FSTUDRPTR  O    E       PRINTER OFLIND(*IN01)</span>
+<span class="diff-line">+ C                   WRITE     HEAD</span>
+<span class="diff-line">+ C   *IN01           WRITE     HEAD</span>
+<span class="diff-line">+ C                   WRITE     DTL</span>
+<span class="diff-line">+ C                   WRITE     END</span>
+<span class="diff-line">+</span>
+<span class="diff-line">+ // O-specs removed. Layout now in STUDRPTR.PRTF.</span></pre>
+    </div>
+  </div>
+
+  <h3>Compile Error and Automatic Correction</h3>
+
+  <p>
+    After applying these changes, IBM Bob compiled the updated RPG program. The first attempt failed because the <code>STUEML</code> (email) field length in the generated DDS did not match the field definition expected by the RPG program.
+  </p>
+
+  <p>
+    In O-specs, the field length is implied by its ending position, whereas DDS requires an explicit field length. The generated definition needed to be corrected to match the program's field definition.
+  </p>
+
+  <p>
+    IBM Bob identified the mismatch, corrected the DDS field length, and recompiled the printer file and RPG program.
+  </p>
+
+  <div class="callout error">
+    <span class="callout-label">Attempt 1 failed — STUEML field length mismatch:</span>
+    The <code>STUEML</code> (email) field length in the newly generated DDS did not match what the RPG compiler was expecting based on the physical file's external description.
+  </div>
+
+  <div class="callout success">
+    <span class="callout-label">Attempt 2 succeeded.</span>
+    IBM Bob corrected the <code>STUEML</code> field length in the DDS, recompiled the PRTF, and recompiled the RPG program. Both compiled at severity 00 with no further errors. This completed the O-spec externalization step.
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="freeformat">Step 4: Converting the Full Program to Free-Format RPGLE</h2>
+
+  <p>
+    With the printer file externalized and the RPG source updated, the working copy was ready for free-format conversion. At this stage, the program used an externally described printer file, and the O-specs had been removed.
+  </p>
+
+  <p>
+    The free-format conversion subtask loaded five IBM i Skills to guide the conversion:
+  </p>
+
+  <ul>
+    <li><code>rpg-fixed-to-free</code> – Provides the rules for converting H, F, D, and C specifications into free-format RPG.</li>
+    <li><code>rpg-primer-basics</code> – Covers basic RPG language concepts and RPG variant detection.</li>
+    <li><code>rpg-specs-primer</code> – Provides guidance on RPG specification structures.</li>
+    <li><code>rpgle-specs</code> – Provides references for ILE RPG IV specifications.</li>
+    <li><code>rpg-ile-understanding</code> – Covers ILE concepts, including activation groups and service program structures.</li>
+  </ul>
+
+  <p>
+    These skills provided the language and conversion guidance for analyzing and converting the remaining specifications.
+  </p>
+
+  <figure class="screenshot-wrap">
+    <img src="images/Free fromat converstion.png" alt="Complete Fixed-to-Free Conversion subtask showing 5 skills loaded in the right panel and the STUDRPT_T.RPGLE source open in the editor, with the updated WRITE opcodes already visible after O-spec externalization" />
+    <figcaption>Fixed-to-Free Conversion subtask — five skills loaded, working copy with WRITE opcodes ready for conversion.</figcaption>
+  </figure>
+
+  <h3>Applying the Free-Format Changes</h3>
+
+  <p>The conversion included the following changes:</p>
+
+  <ul>
+    <li><strong>H-specs:</strong> Replaced with the <code>**FREE</code> directive, followed by <code>CTL-OPT DFTACTGRP(*NO) ACTGRP(*NEW);</code>.</li>
+    <li><strong>F-specs:</strong> Converted into <code>DCL-F</code> declarations with the corresponding file keywords and options.</li>
+    <li><strong>D-specs:</strong> Converted the standalone variable declaration into <code>DCL-S PageCnt ZONED(3:0) INZ(0);</code>.</li>
+    <li><strong>C-specs:</strong> Converted the calculation logic into free-format equivalents, including <code>DOW</code>, <code>READ</code>, <code>WRITE</code>, and <code>ENDDO</code> operations.</li>
+    <li><strong>Loop condition:</strong> Replaced the fixed-format <code>*IN07 DOWEQ '0'</code> condition with <code>DOW NOT %EOF(STUDENP);</code>, using the <code>%EOF</code> built-in function.</li>
+    <li><strong>LR indicator:</strong> Replaced <code>MOVE *ON *INLR</code> with the direct assignment <code>*INLR = *ON;</code>.</li>
+    <li><strong>Subroutine:</strong> Preserved the <code>BEGSR PRTHDR</code> subroutine structure using <code>BEGSR</code> and <code>ENDSR</code> in free-format syntax.</li>
+  </ul>
+
+  <h3>Compiling the Converted Program</h3>
+
+  <p>
+    IBM Bob saved the converted source as <code>STUDR_FREE.RPGLE</code> in <code>STUDLIB/QRPGLESRC</code>.
+  </p>
+
+  <p>
+    It then compiled the program using <code>CRTBNDRPG</code>. Compilation succeeded on the first attempt with severity 00 and no errors.
+  </p>
+
+  <p>
+    This completed the conversion of the RPG program to free-format RPGLE.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="result">The Final Result: STUDR_FREE.RPGLE</h2>
+
+  <figure class="screenshot-wrap">
+    <img src="images/RPG Modernization to Free-Format.png" alt="STUDR_FREE.RPGLE open in VS Code showing the complete free-format source with **FREE, CTL-OPT, DCL-F, DCL-S, DOW NOT %EOF, WRITE, and ENDDO, and the IBM Bob modernization summary panel on the right confirming compilation success, temp member deletion, and the comprehensive modernization summary report" />
+    <figcaption>STUDR_FREE.RPGLE — completed free-format output. Temp objects deleted, summary report generated.</figcaption>
+  </figure>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="summary">What Made This Possible</h2>
+
+  <p>
+    The capabilities used in this modernization were provided through <strong>Premium Package for i (PPI)</strong>. With <strong>IBM i Developer Mode</strong> active, IBM Bob could work directly with the IBM i system instead of simply generating code for manual implementation.
+  </p>
+
+  <p>
+    The RPG Modernization workflow coordinated the conversion, while IBM i Skills provided guidance for O-spec externalization and fixed-to-free conversion. IBM Bob also used tools such as <code>generate_dds</code> to create the external DDS printer file, CL commands to compile the printer file and RPG program, and SQL services to verify the compiled program object.
+  </p>
+
+  <p>
+    This allowed IBM Bob to analyze the source, make the required changes, compile the results, identify and correct a compilation issue, and produce the final free-format RPGLE source. The original program remained unchanged throughout the process.
+  </p>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="demo">Watch It in Action</h2>
+
+  <p>
+    A full walkthrough of the RPG Modernization workflow running live on IBM i, built using <strong>IBM i Developer Mode</strong> in <strong>IBM Bob Premium Package for i (PPI)</strong>.
+  </p>
+
+  <div class="video-wrap">
+    <iframe src="https://www.youtube.com/embed/l4PbiZAB8DI?si=PtPokNOEumz-As9J"
+            title="Modernizing a Native RPG Program to Free-Format RPGLE with IBM Bob"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+  </div>
+
+  <!-- ─────────────────────────────────────────────────────────────────── -->
+  <h2 id="nextsteps">Next Steps</h2>
+
+  <p>
+    If you want to try <strong>IBM Bob</strong> and <strong>IBM Bob Premium Package for i (PPI)</strong>
+    yourself, here are the resources to get started:
+  </p>
+
+  <ul>
+    <li>
+      <strong>Welcome to IBM Bob</strong> —
+      <a href="https://bob.ibm.com/docs/ide" target="_blank" rel="noopener">bob.ibm.com/docs/ide</a>
+    </li>
+    <li>
+      <strong>Start Your Free Trial</strong> —
+      <a href="https://bob.ibm.com/trial" target="_blank" rel="noopener">bob.ibm.com/trial</a>
+    </li>
+    <li>
+      <strong>IBM Bob Premium Package for i (PPI)</strong> —
+      <a href="https://bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index" target="_blank" rel="noopener">bob.ibm.com/docs/ide/premium-packages/bob-for-i/bob-for-i-index</a>
+    </li>
+    <li>
+      <strong>Frequently Asked Questions</strong> —
+      <a href="https://bob.ibm.com/docs/ide/faq" target="_blank" rel="noopener">bob.ibm.com/docs/ide/faq</a>
+    </li>
+  </ul>
+
+
+</div>
+<!-- /page-wrap -->
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                                  -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div>IBM Bob · RPG Modernization Workflow · IBM i Developer Mode</div>
+  <div class="tags">
+    <span>RPGLE</span>
+    <span>Free-Format</span>
+    <span>Fixed-Format</span>
+    <span>DDS</span>
+    <span>PRTF</span>
+    <span>O-Spec Externalization</span>
+    <span>CRTBNDRPG</span>
+    <span>CRTPRTF</span>
+    <span>STUDLIB</span>
+    <span>ibmi_rpg_modernization</span>
+  </div>
+  <div class="author-byline">
+    <div class="author-avatar">MC</div>
+    <span>By Matta Chandrashekar &nbsp;·&nbsp; October 2026</span>
+  </div>
+  <div class="made-with">Made with IBM Bob</div>
+</footer>
+
+</body>
+</html>
